@@ -5,6 +5,7 @@
 #include "vector.h"
 #include "tools.h"
 #include <cmath>
+#include "iostream"
 
 
 TEST_CASE( "Point generates points", "[point]" ) {
@@ -187,5 +188,8 @@ TEST_CASE("Cross Product of Vectors","[crossVec]")
     REQUIRE(v4 == Vector(1.,-2., 1.)); 
 }
 
+TEST_CASE("Window stays open") {
 
-
+    std::cout << "Press Enter to close window...";
+    std::cin.get();  // Wait for user input before continuing
+}
