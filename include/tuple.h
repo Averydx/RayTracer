@@ -5,7 +5,7 @@
 
 /**
  * Implementation of a Tuple. This class is generally not used directly
- * and serves as a base class for Vectors and Points. 
+ * and serves as a base class for Vectors, Points, and Colors. 
  */
 class Tuple
 {

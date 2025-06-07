@@ -4,8 +4,10 @@
 #include "color.h"
 #include "vector.h"
 #include "tools.h"
+#include "canvas.h"
 #include <cmath>
-#include "iostream"
+#include <iostream>
+#include <fstream>
 
 
 TEST_CASE( "Point generates points", "[point]" ) {
@@ -122,13 +124,13 @@ TEST_CASE("Scalar multiplication of tuples", "[scaleTuple]")
     REQUIRE(v3 == Vector(-5.f,-5.f,-5.f)); 
     }
 
-    // SECTION("Scalar Multiplication of Colors")
-    // {
-    //     Color c1 = Color(0.5,0.5,0.5); 
-    //     c1 = c1 * 0.5; 
+    SECTION("Scalar Multiplication of Colors")
+    {
+        Color c1 = Color(0.5,0.5,0.5); 
+        c1 = c1 * 0.5; 
 
-    //     REQUIRE(c1 == Color())
-    // }
+        REQUIRE(c1 == Color(0.25,0.25,0.25)); 
+    }
 
 }
 
@@ -188,8 +190,146 @@ TEST_CASE("Cross Product of Vectors","[crossVec]")
     REQUIRE(v4 == Vector(1.,-2., 1.)); 
 }
 
-TEST_CASE("Window stays open") {
+TEST_CASE("Hadamard Product of Colors","[MultColor]")
+{
+    Color c1 = Color(0.5,0.5,0.5); 
+    Color c2 = Color(0.5,0.5,0.5); 
+    Color c3 = c1 * c2; 
 
-    std::cout << "Press Enter to close window...";
-    std::cin.get();  // Wait for user input before continuing
+    REQUIRE(c3 == Color(0.25,0.25,0.25)); 
+}
+
+TEST_CASE("Canvas Initialization","[initCanvas]")
+{
+    int width = 5; 
+    int height = 3; 
+    Canvas c(width,height); 
+
+    REQUIRE(c.pixel_map.size() == width * height); 
+
+    for(int i = 0; i < c.pixel_map.size(); i++)
+    {
+        REQUIRE(c.pixel_map.at(i) == Color(0.,0.,0.)); 
+    }
+}
+
+TEST_CASE("Pixel Getters and Setters","[CanvasPixel]")
+{
+    int width = 5; 
+    int height = 3; 
+    Canvas c(width,height); 
+    Color red = Color(255,0,0); 
+
+    c.SetPixel(4,2,red); 
+    Color c1 = c.GetPixel(4,2); 
+
+    REQUIRE(c1 == red); 
+
+    c.SetPixel(0,0,red); 
+    Color c2 = c.GetPixel(0,0); 
+
+    REQUIRE(c2 == red); 
+
+}
+
+TEST_CASE("PixelToPPM","[PixelPPM]")
+{
+    int width = 5; 
+    int height = 3; 
+    Canvas c(width,height); 
+
+    Color c1 = Color(1.5,0,0);
+    Color c2 = Color(0.,0.5,0.); 
+    Color c3 = Color(-0.5,0.,1); 
+
+    c.SetPixel(0,0,c1); 
+    c.SetPixel(2,1,c2); 
+    c.SetPixel(4,2,c3); 
+
+    c.CanvasToPPM("test1.ppm"); 
+
+    std::ifstream myfile("test1.ppm");
+    REQUIRE(myfile.is_open()); 
+    std::string str; 
+    int index = 0; 
+    while(myfile >> str)
+    {
+        if(index == (4 + 0))
+        {
+            REQUIRE(str == "255"); 
+        }
+        if(index == (4 + 1))
+        {
+            REQUIRE(str == "0"); 
+        }
+        if(index == (4 + 2))
+        {
+            REQUIRE(str == "0"); 
+        }
+
+        if(index == (25 + 0))
+        {
+            REQUIRE(str == "0"); 
+        }
+        if(index == (25 + 1))
+        {
+            REQUIRE(str == "128"); 
+        }
+        if(index == (25 + 2))
+        {
+            REQUIRE(str == "0"); 
+        }
+
+        if(index == (46 + 0))
+        {
+            REQUIRE(str == "0"); 
+        }
+        if(index == (46 + 1))
+        {
+            REQUIRE(str == "0"); 
+        }
+        if(index == (46 + 2))
+        {
+            REQUIRE(str == "255"); 
+        }
+
+        index++; 
+    }
+
+    myfile.close(); 
+
+}
+
+TEST_CASE("PPMWrapping","[WrapPPM]")
+{
+    int width = 10; 
+    int height = 2; 
+    Canvas c(width,height); 
+
+    c.SetAllPixels(Color(1.,0.8,0.6)); 
+
+    c.CanvasToPPM("test2.ppm"); 
+
+    std::ifstream myfile("test2.ppm");
+    REQUIRE(myfile.is_open()); 
+    std::string str; 
+    int index = 0; 
+
+    while(myfile >> str)
+    {
+        if(index == 4 + 0)
+        {
+            REQUIRE(str == "255"); 
+        }
+
+        if(index == 4 + 60)
+        {
+            REQUIRE(str == "153"); 
+        }
+
+        index++; 
+    }
+
+    myfile.close(); 
+
 }

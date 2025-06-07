@@ -15,6 +15,7 @@ class Point : public Tuple
 
         //Constructors
         Point(double x, double y, double z); 
+        Point(); 
 
         //Operators
         bool operator==(Point const& obj); 

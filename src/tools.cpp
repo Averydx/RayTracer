@@ -1,5 +1,6 @@
 #include <cmath>
 
+
 const double epsilon = 0.0000001;
 
 bool equal_double(double a, double b)
@@ -11,3 +12,4 @@ bool equal_double(double a, double b)
     
     return false; 
 }
+
