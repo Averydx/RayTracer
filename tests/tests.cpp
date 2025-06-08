@@ -97,6 +97,17 @@ TEST_CASE("Tuple subtraction", "[subTuple]")
 
 }
 
+TEST_CASE("Vector-Point addition", "[addVecPoint]")
+{
+    Point p1 = Point(1.,1.,1.);
+    Vector v1 = Vector(0.5,0.,0.5);
+    
+    Point p2 = p1 + v1; 
+    REQUIRE(p2 == Point(1.5,1.0,1.5)); 
+
+}
+
+
 TEST_CASE("Negatation of Tuple", "[negTuple]")
 {
 

@@ -17,3 +17,8 @@ Vector Point::operator-(Point const& obj)
     return Vector(this->x - obj.x,this->y - obj.y, this->z - obj.z); 
 }
 
+Point Point::operator+(Vector const& obj)
+{
+    return Point(this->x + obj.x,this->y + obj.y, this->z + obj.z);
+}
+
