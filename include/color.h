@@ -13,6 +13,7 @@ class Color : public Tuple
 
         //Constructors
         Color(double r, double g, double b); 
+        Color(); 
 
         //Operators
         bool operator==(Color const& obj); 

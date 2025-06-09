@@ -4,6 +4,9 @@
 Color::Color(double r, double g, double b) 
     : Tuple(r, g, b, 0.0) {}
 
+Color::Color()
+    :Tuple(0.0,0.0,0.0,0.0) {}
+
 bool Color::operator==(Color const& obj)
 {
     return equal_double(this->x,obj.x) && equal_double(this->y,obj.y) && equal_double(this->z,obj.z) && equal_double(this->w,obj.w); 
