@@ -64,7 +64,7 @@ TEST_CASE("Tuple Equality")
     }
 }
 
-TEST_CASE("Tuple subtraction", "[subTuple]")
+TEST_CASE("Tuple subtraction", "[tuple]")
 {
 
     SECTION("Vectors")
@@ -101,7 +101,7 @@ TEST_CASE("Tuple subtraction", "[subTuple]")
 
 }
 
-TEST_CASE("Vector-Point addition", "[addVecPoint]")
+TEST_CASE("Vector-Point addition", "[vector]")
 {
     Point p1 = Point(1.,1.,1.);
     Vector v1 = Vector(0.5,0.,0.5);
@@ -112,7 +112,7 @@ TEST_CASE("Vector-Point addition", "[addVecPoint]")
 }
 
 
-TEST_CASE("Negatation of Tuple", "[negTuple]")
+TEST_CASE("Negatation of Tuple", "[tuple]")
 {
 
     SECTION("Vectors")
@@ -126,7 +126,7 @@ TEST_CASE("Negatation of Tuple", "[negTuple]")
 
 }
 
-TEST_CASE("Scalar multiplication of tuples", "[scaleTuple]")
+TEST_CASE("Scalar multiplication of tuples", "[tuple]")
 {
 
     SECTION("Vectors")
@@ -176,7 +176,7 @@ TEST_CASE("Magnitude of Vector","[magVector]")
     REQUIRE(equal_double(t3.magnitude(),sqrt(14))); 
 }
 
-TEST_CASE("Dot product of vectors","[dotVec]")
+TEST_CASE("Dot product of vectors","[vector]")
 {
     Vector v1 =  Vector(1.,1.,1.);
     Vector v2 =  Vector(2.,2.,2.); 
@@ -184,7 +184,7 @@ TEST_CASE("Dot product of vectors","[dotVec]")
     REQUIRE(equal_double(v1 * v2,6.f));  
 }
 
-TEST_CASE("Normalization of Vector","[normVec]")
+TEST_CASE("Normalization of Vector","[vector]")
 {
     Vector v1 =  Vector(1.,1.,1.); 
     v1.normalize(); 
@@ -193,7 +193,7 @@ TEST_CASE("Normalization of Vector","[normVec]")
 }
 
 
-TEST_CASE("Cross Product of Vectors","[crossVec]")
+TEST_CASE("Cross Product of Vectors","[vector]")
 {
     Vector v1 = Vector(1.,2.,3.);
     Vector v2 = Vector(2.,3.,4.);
@@ -205,7 +205,7 @@ TEST_CASE("Cross Product of Vectors","[crossVec]")
     REQUIRE(v4 == Vector(1.,-2., 1.)); 
 }
 
-TEST_CASE("Hadamard Product of Colors","[MultColor]")
+TEST_CASE("Hadamard Product of Colors","[color]")
 {
     Color c1 = Color(0.5,0.5,0.5); 
     Color c2 = Color(0.5,0.5,0.5); 
@@ -214,7 +214,7 @@ TEST_CASE("Hadamard Product of Colors","[MultColor]")
     REQUIRE(c3 == Color(0.25,0.25,0.25)); 
 }
 
-TEST_CASE("Canvas Initialization","[initCanvas]")
+TEST_CASE("Canvas Initialization","[color]")
 {
     int width = 5; 
     int height = 3; 
@@ -228,7 +228,7 @@ TEST_CASE("Canvas Initialization","[initCanvas]")
     }
 }
 
-TEST_CASE("Pixel Getters and Setters","[CanvasPixel]")
+TEST_CASE("Pixel Getters and Setters","[canvas]")
 {
     int width = 5; 
     int height = 3; 
@@ -315,7 +315,7 @@ TEST_CASE("PixelToPPM","[PixelPPM]")
 
 }
 
-TEST_CASE("PPMWrapping","[WrapPPM]")
+TEST_CASE("PPMWrapping","[ppm]")
 {
     int width = 10; 
     int height = 2; 
@@ -349,7 +349,7 @@ TEST_CASE("PPMWrapping","[WrapPPM]")
 
 }
 
-TEST_CASE("MatrixAccess","[MatrixCheck]")
+TEST_CASE("MatrixAccess","[matrix]")
 {
 
     //4x4 matrix
@@ -405,7 +405,7 @@ TEST_CASE("MatrixAccess","[MatrixCheck]")
 
 }
 
-TEST_CASE("MatrixEquality","[MatrixEqual]")
+TEST_CASE("MatrixEquality","[matrix]")
 {
     Matrix m1(4,4);
     std::vector<double> data = {1,2,3,4,5,6,7,8,9,8,7,6,5,4,3,2};  
@@ -421,7 +421,7 @@ TEST_CASE("MatrixEquality","[MatrixEqual]")
     REQUIRE(!(m1 == m2)); 
 }
 
-TEST_CASE("MatrixMultSquare","[MatrixMultSquare]")
+TEST_CASE("MatrixMultSquare","[matrix]")
 {
     Matrix m1(3,3);
     std::vector<double> data = {1,2,3,4,5,6,7,8,9}; 
@@ -441,7 +441,7 @@ TEST_CASE("MatrixMultSquare","[MatrixMultSquare]")
 
 }
 
-TEST_CASE("MatrixMultNonSquare","[MatrixMultNonSquare]")
+TEST_CASE("MatrixMultNonSquare","[matrix]")
 {
     Matrix m1(3,3);
     std::vector<double> data = {1,2,3,4,5,6,7,8,9}; 
@@ -461,7 +461,7 @@ TEST_CASE("MatrixMultNonSquare","[MatrixMultNonSquare]")
 
 }
 
-TEST_CASE("MatrixTupleMultiplication","[MatTupleMult]")
+TEST_CASE("MatrixTupleMultiplication","[matrix]")
 {
     Point p(1,2,3); 
     Matrix m(4,4);
@@ -477,4 +477,17 @@ TEST_CASE("MatrixTupleMultiplication","[MatTupleMult]")
 
     REQUIRE(result2 == Vector(14,22,32)); 
     
+}
+
+TEST_CASE("MatrixIdentityMult","[matrix]")
+{
+    Matrix m(4,4);
+    Matrix identity(4,4); 
+    identity.setIdentity(); 
+    std::vector<double> data = {1,2,3,4,2,4,4,2,8,6,4,1,0,0,0,1}; 
+    m.setAllElements(data); 
+
+    Matrix result = m * identity; 
+
+    REQUIRE(result == m); 
 }

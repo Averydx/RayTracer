@@ -36,6 +36,18 @@ void Matrix::setAllElements(std::vector<double>& data)
         }
     }
 }
+
+void Matrix::setIdentity()
+{
+    for(int i = 0; i < this->rows;i++)
+    {
+        for(int j = 0; j < this->cols; j++)
+        {
+            if(i == j)
+                this->data[i * cols + j] = 1; 
+        }
+    }
+}
    
 
 bool Matrix::operator==(Matrix const& obj)
@@ -113,4 +125,6 @@ Point Matrix::operator*(Point const& obj)
 
     return result; 
 }
+
+
 

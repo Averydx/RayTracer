@@ -27,10 +27,12 @@ class Matrix
 
     //Constructors
     Matrix(int rows,int cols); 
+
+    //methods
     double getElement(int row, int col) const;
     void setElement(int row,int col, double value);  
     void setAllElements(std::vector<double>& data); 
-
+    void setIdentity(); 
 }; 
 
 #endif
