@@ -14,6 +14,18 @@ Matrix::Matrix(int rows, int cols)
     this->data.resize(rows*cols,1); 
 }
 
+Matrix::Matrix(int rows, int cols, std::vector<double>& init_data)
+{
+    this->rows = rows; 
+    this->cols = cols; 
+
+    this->data = std::vector<double>(); 
+
+    this->data.resize(rows*cols,1); 
+
+    this->setAllElements(init_data); 
+}
+
 double Matrix::getElement(int row,int col) const
 {
     return this->data.at(row * cols + col); 
@@ -39,7 +51,7 @@ void Matrix::setElement(int row,int col, double value)
 void Matrix::setAllElements(std::vector<double>& data)
 {
     if(data.size() != this->data.size())
-        return; 
+        throw std::invalid_argument("data array and matrix dimension mismatch!"); 
 
     for(int i = 0; i < this->rows;i++)
     {
@@ -63,6 +75,28 @@ void Matrix::setIdentity()
 
         }
     }
+}
+
+double Matrix::determinant()
+{
+    if(rows != cols)
+    {
+        throw std::invalid_argument("Matrix is non-square!"); 
+    }
+
+    double det = 0;
+
+    if(rows ==2 && cols ==2)
+        det = this->getElement(0,0) * this->getElement(1,1) - this->getElement(0,1) * this->getElement(1,0); 
+    else 
+        {
+            for(int i = 0; i < this->cols; i++)
+            {
+                det = det + this->getElement(0,i) * this->cofactor(0,i); 
+            }
+        }
+
+    return det; 
 }
 
 void Matrix::transpose()
@@ -92,8 +126,63 @@ void Matrix::transpose()
         this->data[i] = new_data[i]; 
     }
     
-
 }
+
+Matrix Matrix::subMatrix(int rowToRemove,int colToRemove)
+{
+    Matrix sub(rows -1, cols -1); 
+    int subIndex = 0; 
+
+    for(int i = 0; i < this->rows;i++)
+    {
+        for(int j = 0; j < this->cols; j++)
+        {
+            if(i != rowToRemove && j != colToRemove)
+            {
+                sub.data[subIndex] = data[i * cols + j]; 
+                subIndex++; 
+            }
+        }
+    }
+
+    return sub; 
+}
+
+double Matrix::minor(int rowToRemove,int colToRemove)
+{
+    Matrix subMatrix = this->subMatrix(rowToRemove,colToRemove); 
+    return subMatrix.determinant(); 
+}
+
+double Matrix::cofactor(int rowToRemove,int colToRemove)
+{
+    if((rowToRemove + colToRemove) % 2 != 0)
+        return -1 * this->minor(rowToRemove,colToRemove); 
+
+    return this->minor(rowToRemove,colToRemove);
+}
+
+Matrix Matrix::inverse()
+{
+    if(this->determinant() == 0)
+        throw std::invalid_argument("Matrix has determinant 0, it is not invertible!"); 
+
+    Matrix inv_m = Matrix(this->rows,this->cols); 
+    double det = this->determinant(); 
+
+    for(int i = 0; i < this->rows;i++)
+    {
+        for(int j = 0; j < this->cols; j++)
+        {
+            double c = this->cofactor(i,j); 
+
+            inv_m.setElement(j,i,c / det); 
+        }
+    }
+
+    return inv_m; 
+}
+
    
 
 bool Matrix::operator==(Matrix const& obj)
@@ -127,7 +216,7 @@ Matrix Matrix::operator*(Matrix const& obj)
     {
         for(int j = 0; j < obj.cols;j++)
         {
-            int value = 0; 
+            double value = 0; 
             for(int k = 0; k < this->cols;k++)
             {
                 value += this->getElement(i,k) * obj.getElement(k,j); 

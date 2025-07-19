@@ -2,7 +2,7 @@
 #include "vector.h"
 #include <iostream>
 #include "canvas.h"
-#include <cmath>
+#include <math.h>
 
 class Projectile
 {
@@ -61,5 +61,5 @@ int main(int argc, char *argv[])
             c.SetPixel(round(std::max(proj.loc.x,0.)),round(std::max(height - proj.loc.y,0.)), Color(255,0.,0.)); 
     }
 
-    c.CanvasToPPM("demo.ppm"); 
+    c.CanvasToPPM("demo1.ppm"); 
 }

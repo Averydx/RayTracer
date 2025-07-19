@@ -27,6 +27,7 @@ class Matrix
 
     //Constructors
     Matrix(int rows,int cols); 
+    Matrix(int rows, int cols, std::vector<double>& data); 
 
     //methods
     double getElement(int row, int col) const;
@@ -35,6 +36,11 @@ class Matrix
     void setIdentity();
     void printMatrix(); 
     void transpose();  
+    double determinant(); 
+    double minor(int rowToRemove,int colToRemove); 
+    double cofactor(int rowToRemove,int colToRemove); 
+    Matrix subMatrix(int rowToRemove, int colToRemove); 
+    Matrix inverse(); 
 }; 
 
 #endif

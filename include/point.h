@@ -21,6 +21,9 @@ class Point : public Tuple
         bool operator==(Point const& obj); 
         Vector operator-(Point const& obj); 
         Point operator+(Vector const& obj); 
+
+        //methods 
+        void printPoint(); 
 }; 
 
 #endif
