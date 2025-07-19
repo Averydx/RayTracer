@@ -489,5 +489,30 @@ TEST_CASE("MatrixIdentityMult","[matrix]")
 
     Matrix result = m * identity; 
 
-    REQUIRE(result == m); 
+    REQUIRE(m == result); 
+}
+
+TEST_CASE("MatrixTranspose","[matrix]")
+{
+    Matrix m(3,4); 
+    std::vector<double> data = {
+        1,2,3,4,
+        2,4,4,2,
+        8,6,4,1}; 
+
+    m.setAllElements(data); 
+    m.transpose(); 
+
+    REQUIRE(m.rows == 4); 
+    REQUIRE(m.cols == 3); 
+
+    Matrix desiredResult(4,3); 
+    std::vector<double> desiredResultData = {
+        1,2,8,
+        2,4,6,
+        3,4,4,
+        4,2,1}; 
+
+    desiredResult.setAllElements(desiredResultData); 
+    REQUIRE(m == desiredResult); 
 }

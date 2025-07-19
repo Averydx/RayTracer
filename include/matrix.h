@@ -32,7 +32,9 @@ class Matrix
     double getElement(int row, int col) const;
     void setElement(int row,int col, double value);  
     void setAllElements(std::vector<double>& data); 
-    void setIdentity(); 
+    void setIdentity();
+    void printMatrix(); 
+    void transpose();  
 }; 
 
 #endif

@@ -2,6 +2,7 @@
 #include "tools.h"
 
 #include <stdexcept>
+#include <iostream>
 
 Matrix::Matrix(int rows, int cols)
 {
@@ -16,6 +17,18 @@ Matrix::Matrix(int rows, int cols)
 double Matrix::getElement(int row,int col) const
 {
     return this->data.at(row * cols + col); 
+}
+
+void Matrix::printMatrix()
+{
+    for(int i = 0; i < this->rows;i++)
+    {
+        for(int j = 0; j < this->cols; j++)
+        {
+            std::cout<<this->data[i * cols + j] << " "; 
+        }
+        std::cout<<std::endl; 
+    }
 }
 
 void Matrix::setElement(int row,int col, double value)
@@ -44,9 +57,42 @@ void Matrix::setIdentity()
         for(int j = 0; j < this->cols; j++)
         {
             if(i == j)
-                this->data[i * cols + j] = 1; 
+                this->data[i * cols + j] = 1.f;
+            else 
+                this->data[i * cols + j] = 0.f;  
+
         }
     }
+}
+
+void Matrix::transpose()
+{
+    int old_rows = this->rows; 
+    int old_cols = this->cols; 
+
+    this->rows = old_cols; 
+    this->cols = old_rows; 
+    
+    std::vector<double> new_data;
+    new_data.resize(rows*cols,1); 
+
+    for(int i = 0; i < old_rows; i++)
+    {
+        for(int j = 0; j < old_cols;j++)
+        {
+            int old_index = i * old_cols + j; 
+            int new_index = j * old_rows + i; 
+
+            new_data[new_index] = data[old_index]; 
+        }
+    }
+
+    for(int i = 0; i < data.size();i++)
+    {
+        this->data[i] = new_data[i]; 
+    }
+    
+
 }
    
 
