@@ -9,22 +9,22 @@ Point::Point(double x, double y, double z)
 Point::Point()
     : Tuple(0, 0, 0, 1.0) {}
 
-bool Point::operator==(Point const& obj)
+bool Point::operator==(Point const& obj) const
 {
     return equal_double(this->x,obj.x) && equal_double(this->y,obj.y) && equal_double(this->z,obj.z) && equal_double(this->w,obj.w); 
 } 
 
-Vector Point::operator-(Point const& obj)
+Vector Point::operator-(Point const& obj) const
 {
     return Vector(this->x - obj.x,this->y - obj.y, this->z - obj.z); 
 }
 
-Point Point::operator+(Vector const& obj)
+Point Point::operator+(Vector const& obj) const
 {
     return Point(this->x + obj.x,this->y + obj.y, this->z + obj.z);
 }
 
-void Point::printPoint()
+void Point::printPoint() const
 {
     std::cout<< this->x << " " << this->y << " " << this->z << std::endl; 
 }

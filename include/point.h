@@ -18,12 +18,12 @@ class Point : public Tuple
         Point(); 
 
         //Operators
-        bool operator==(Point const& obj); 
-        Vector operator-(Point const& obj); 
-        Point operator+(Vector const& obj); 
+        bool operator==(Point const& obj) const; 
+        Vector operator-(Point const& obj) const; 
+        Point operator+(Vector const& obj) const; 
 
         //methods 
-        void printPoint(); 
+        void printPoint() const; 
 }; 
 
 #endif

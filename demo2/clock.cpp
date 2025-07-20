@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
         Matrix A = rotation_y(i * M_PI/6); 
         Point temp = A * p; 
 
-        c.SetPixel(clock_radius * (25 + temp.x),clock_radius * (25 + temp.z),Color(255,0,0));
+        c.SetPixel(25 + (temp.x)*clock_radius,25 + (temp.z * clock_radius),Color(255,0,0));
     }
 
     c.CanvasToPPM("demo2.ppm"); 

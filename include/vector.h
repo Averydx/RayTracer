@@ -16,17 +16,18 @@ class Vector : public Tuple
         Vector(); 
 
         //Operators
-        Vector operator+(Vector const& obj);
-        Vector operator-(Vector const& obj);
-        Vector operator-(); 
-        Vector operator*(double scalar); 
-        double operator*(Vector const& obj); 
-        Vector operator^(Vector const& obj); 
-        bool operator==(Vector const& obj); 
+        Vector operator+(Vector const& obj) const;
+        Vector operator-(Vector const& obj) const;
+        Vector operator-() const; 
+        Vector operator*(double scalar) const; 
+        double operator*(Vector const& obj) const; 
+        Vector operator^(Vector const& obj) const; 
+        bool operator==(Vector const& obj) const; 
 
         //Methods
-        double magnitude(); 
+        double magnitude() const; 
         void normalize(); 
+        void printVector() const; 
 
         
 }; 
