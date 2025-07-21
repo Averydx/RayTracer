@@ -45,19 +45,12 @@ TEST_CASE("Ray traversal","[ray]")
     REQUIRE(pos3 == Point(4.5,3,4)); 
 }
 
-TEST_CASE("Creating a sphere","[sphere]")
-{
-    Sphere s(Point(0.f,0.f,0.f),10.f);
-    REQUIRE(s.center == Point(0.,0.,0.)); 
-    REQUIRE(s.radius == 10.f); 
-}
-
 TEST_CASE("Ray sphere intersection")
 {
     SECTION("Two intersections")
     {
         Ray r(Point(0,0,-5), Vector(0,0,1)); 
-        Sphere s(Point(0.,0.,0.),1.); 
+        Sphere s; 
 
         std::vector<Intersection*> intersections = s.intersect(r); 
 
@@ -67,7 +60,7 @@ TEST_CASE("Ray sphere intersection")
     SECTION("One intersection")
     {
         Ray r(Point(0,1,-5), Vector(0,0,1)); 
-        Sphere s(Point(0.,0.,0.),1.); 
+        Sphere s; 
 
         std::vector<Intersection*> intersections = s.intersect(r); 
 
@@ -78,7 +71,7 @@ TEST_CASE("Ray sphere intersection")
     SECTION("No intersections")
     {
         Ray r(Point(0,2,-5), Vector(0,0,1)); 
-        Sphere s(Point(0.,0.,0.),1.); 
+        Sphere s; 
 
         std::vector<Intersection*> intersections = s.intersect(r); 
 
@@ -88,7 +81,7 @@ TEST_CASE("Ray sphere intersection")
     SECTION("Ray inside sphere")
     {
         Ray r(Point(0,0.,0.), Vector(0,0,1)); 
-        Sphere s(Point(0.,0.,0.),1.); 
+        Sphere s; 
 
         std::vector<Intersection*> intersections = s.intersect(r); 
 
@@ -100,7 +93,7 @@ TEST_CASE("Ray sphere intersection")
     SECTION("Ray in front of sphere")
     {
         Ray r(Point(0,0.,5.), Vector(0,0,1)); 
-        Sphere s(Point(0.,0.,0.),1.); 
+        Sphere s; 
 
         std::vector<Intersection*> intersections = s.intersect(r); 
 
@@ -112,15 +105,15 @@ TEST_CASE("Ray sphere intersection")
 
 TEST_CASE("creating intersection","[ray]")
 {
-    Sphere s(Point(0.f,0.f,0.f),1.f); 
+    Sphere s; 
     Intersection i(3.5,&s); 
     REQUIRE(i.t == 3.5); 
     REQUIRE(i.s == &s); 
 }
 
-TEST_CASE("Aggregating intersections","ray")
+TEST_CASE("Aggregating intersections","[ray]")
 {
-    Sphere s(Point(0.f,0.f,0.f),1.f);
+    Sphere s;
     Intersection i1(1.f,&s);
     Intersection i2(2.f,&s);
 
@@ -129,5 +122,72 @@ TEST_CASE("Aggregating intersections","ray")
     REQUIRE(xs[0]->s == &s); 
     REQUIRE(xs[1]->s == &s); 
 
+}
+
+TEST_CASE("Hit tests","[ray]")
+{
+    Sphere s;
+    SECTION("All positive t")
+    {
+
+        Intersection i1(1.f,&s);
+        Intersection i2(2.f,&s);
+        Intersection i3(4.5f,&s);
+        Intersection i4(1.5f,&s);
+
+
+        std::vector<Intersection*> xs = intersections({&i1,&i2,&i3,&i4}); 
+        Intersection* I = find_hit(xs); 
+
+        REQUIRE(I == &i1); 
+    }
+    SECTION("Some negative t")
+    {
+        Intersection i1(-1.f,&s);
+        Intersection i2(2.f,&s);
+        Intersection i3(-4.5f,&s);
+        Intersection i4(1.5f,&s);
+
+
+        std::vector<Intersection*> xs = intersections({&i1,&i2,&i3,&i4}); 
+        Intersection* I = find_hit(xs); 
+
+        REQUIRE(I == &i4); 
+    }
+    SECTION("All negative t")
+    {
+        Intersection i1(-1.f,&s);
+        Intersection i2(-2.f,&s);
+        Intersection i3(-4.5f,&s);
+        Intersection i4(-1.5f,&s);
+
+
+        std::vector<Intersection*> xs = intersections({&i1,&i2,&i3,&i4}); 
+        Intersection* I = find_hit(xs); 
+
+        REQUIRE(I == nullptr); 
+    }
+}
+
+TEST_CASE("Ray transforms","[ray]")
+{
+    Ray r(Point(1.f,2.f,3.f),Vector(0.f,1.f,0.f)); 
+    SECTION("Ray translation")
+    {
+        Matrix m = translation(3,4,5); 
+        Ray r2 = r.ray_transform(m); 
+
+        REQUIRE(r2.origin == Point(4,6,8)); 
+        REQUIRE(r2.direction == Vector(0.,1.,0.)); 
+    }
+
+    SECTION("Ray translation")
+    {
+        Matrix m = scaling(2,3,4); 
+        Ray r2 = r.ray_transform(m); 
+
+        REQUIRE(r2.origin == Point(2,6,12)); 
+        REQUIRE(r2.direction == Vector(0.,3.,0.)); 
+    }
 }
 

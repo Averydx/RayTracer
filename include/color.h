@@ -16,11 +16,11 @@ class Color : public Tuple
         Color(); 
 
         //Operators
-        bool operator==(Color const& obj); 
-        Color operator-(Color const& obj); 
-        Color operator+(Color const& obj); 
-        Color operator*(Color const& obj); 
-        Color operator*(double scalar); 
+        bool operator==(Color const& obj) const; 
+        Color operator-(Color const& obj) const; 
+        Color operator+(Color const& obj) const; 
+        Color operator*(Color const& obj) const; 
+        Color operator*(double scalar) const; 
 
         //Functions
         void clamp(int min, int max); 

@@ -19,11 +19,10 @@ class Matrix
     std::vector<double> data; 
 
     //operators 
-    bool operator==(Matrix const& obj); 
-    Matrix operator*(Matrix const& obj); 
-    Color operator*(Color const& obj); 
-    Vector operator*(Vector const& obj); 
-    Point operator*(Point const& obj); 
+    Matrix operator*(Matrix const& obj) const; 
+    Color operator*(Color const& obj) const; 
+    Vector operator*(Vector const& obj) const; 
+    Point operator*(Point const& obj) const; 
 
     //Constructors
     Matrix(int rows,int cols); 
@@ -36,11 +35,13 @@ class Matrix
     void setIdentity();
     void printMatrix(); 
     void transpose();  
-    double determinant(); 
-    double minor(int rowToRemove,int colToRemove); 
-    double cofactor(int rowToRemove,int colToRemove); 
-    Matrix subMatrix(int rowToRemove, int colToRemove); 
-    Matrix inverse(); 
+    double determinant() const; 
+    double minor(int rowToRemove,int colToRemove) const; 
+    double cofactor(int rowToRemove,int colToRemove) const; 
+    Matrix subMatrix(int rowToRemove, int colToRemove) const; 
+    Matrix inverse() const; 
 }; 
+
+bool operator==(Matrix const& obj1,Matrix const& obj2); 
 
 #endif

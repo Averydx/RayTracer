@@ -3,6 +3,7 @@
 
 #include "point.h"
 #include "vector.h"
+#include "matrix.h"
 
 #include <vector>
 
@@ -13,10 +14,11 @@ class Ray
         Vector direction; 
 
         //Constructors
-        Ray(Point& origin,Vector& direction); 
+        Ray(const Point& origin,const Vector& direction); 
 
         //methods
         Point position(double t); 
+        Ray ray_transform(const Matrix& m) const; 
 
 }; 
 

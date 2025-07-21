@@ -74,6 +74,14 @@ void Vector::normalize()
     this->w /= mag; 
 }
 
+Vector Vector::reflect_vector(const Vector& normal) const
+{
+    Vector in = *(this); 
+    Vector v = in - (normal * 2 * (in * normal)); 
+
+    return v; 
+}
+
 void Vector::printVector() const
 {
     std::cout<<this->x<<" "<<this->y<<" "<<this->z<<std::endl; 

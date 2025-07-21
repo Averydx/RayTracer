@@ -77,7 +77,7 @@ void Matrix::setIdentity()
     }
 }
 
-double Matrix::determinant()
+double Matrix::determinant() const
 {
     if(rows != cols)
     {
@@ -128,7 +128,7 @@ void Matrix::transpose()
     
 }
 
-Matrix Matrix::subMatrix(int rowToRemove,int colToRemove)
+Matrix Matrix::subMatrix(int rowToRemove,int colToRemove) const
 {
     Matrix sub(rows -1, cols -1); 
     int subIndex = 0; 
@@ -148,13 +148,13 @@ Matrix Matrix::subMatrix(int rowToRemove,int colToRemove)
     return sub; 
 }
 
-double Matrix::minor(int rowToRemove,int colToRemove)
+double Matrix::minor(int rowToRemove,int colToRemove) const
 {
     Matrix subMatrix = this->subMatrix(rowToRemove,colToRemove); 
     return subMatrix.determinant(); 
 }
 
-double Matrix::cofactor(int rowToRemove,int colToRemove)
+double Matrix::cofactor(int rowToRemove,int colToRemove) const
 {
     if((rowToRemove + colToRemove) % 2 != 0)
         return -1 * this->minor(rowToRemove,colToRemove); 
@@ -162,7 +162,7 @@ double Matrix::cofactor(int rowToRemove,int colToRemove)
     return this->minor(rowToRemove,colToRemove);
 }
 
-Matrix Matrix::inverse()
+Matrix Matrix::inverse() const
 {
     if(this->determinant() == 0)
         throw std::invalid_argument("Matrix has determinant 0, it is not invertible!"); 
@@ -183,28 +183,8 @@ Matrix Matrix::inverse()
     return inv_m; 
 }
 
-   
 
-bool Matrix::operator==(Matrix const& obj)
-{
-    if((this->rows != obj.rows) || (this->rows != obj.rows))
-        return false; 
-
-    for(int i = 0; i < this->rows; i++)
-    {
-        for(int j = 0; j < this->cols;j++)
-        {
-            if(!equal_double(this->getElement(i,j),obj.getElement(i,j)))
-            {
-                return false; 
-            }
-        }
-    }
-
-    return true; 
-}
-
-Matrix Matrix::operator*(Matrix const& obj)
+Matrix Matrix::operator*(Matrix const& obj) const
 {
     if(this->cols != obj.rows)
     {
@@ -229,7 +209,7 @@ Matrix Matrix::operator*(Matrix const& obj)
     return result; 
 }
 
-Vector Matrix::operator*(Vector const& obj)
+Vector Matrix::operator*(Vector const& obj) const
 {
     if(this->cols != 4)
     {
@@ -245,7 +225,7 @@ Vector Matrix::operator*(Vector const& obj)
     return result; 
 }
 
-Point Matrix::operator*(Point const& obj)
+Point Matrix::operator*(Point const& obj) const
 {
     if(this->cols != 4)
     {
@@ -259,6 +239,25 @@ Point Matrix::operator*(Point const& obj)
     result.w = this->getElement(3,0) * obj.x + this->getElement(3,1) * obj.y + this->getElement(3,2) * obj.z + this->getElement(3,3) * obj.w;
 
     return result; 
+}
+
+bool operator==(Matrix const& obj1,Matrix const& obj2)
+{
+    if((obj1.rows != obj2.rows) || (obj1.rows != obj2.rows))
+        return false; 
+
+    for(int i = 0; i < obj1.rows; i++)
+    {
+        for(int j = 0; j < obj1.cols;j++)
+        {
+            if(!equal_double(obj1.getElement(i,j),obj2.getElement(i,j)))
+            {
+                return false; 
+            }
+        }
+    }
+
+    return true; 
 }
 
 

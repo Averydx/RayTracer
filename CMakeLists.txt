@@ -42,4 +42,10 @@ add_executable(demo2 ${DEMO_FILES})
 target_link_libraries(demo2 PRIVATE raytracer_core)
 target_include_directories(demo2 PRIVATE ${PROJECT_SOURCE_DIR}/include)
 
+# Demo3
+file(GLOB_RECURSE DEMO_FILES "demo3/*.cpp")
+add_executable(demo3 ${DEMO_FILES})
+target_link_libraries(demo3 PRIVATE raytracer_core)
+target_include_directories(demo3 PRIVATE ${PROJECT_SOURCE_DIR}/include)
+
 

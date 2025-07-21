@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
         int y = round(std::max(height - proj.loc.y,0.));
 
         if((y > 0 && y < height)&&(x > 0 && x < width))
-            c.SetPixel(round(std::max(proj.loc.x,0.)),round(std::max(height - proj.loc.y,0.)), Color(255,0.,0.)); 
+            c.SetPixel(round(std::max(proj.loc.x,0.)),round(std::max(height - proj.loc.y,0.)), Color(1,0.,0.)); 
     }
 
     c.CanvasToPPM("demo1.ppm"); 
