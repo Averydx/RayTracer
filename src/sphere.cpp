@@ -1,11 +1,11 @@
 #include "sphere.h"
 
-std::vector<Intersection*> Sphere::intersect(const Ray& r) const
+std::vector<Intersection> Sphere::intersect(const Ray& r) const
 {
 
-    std::vector<Intersection*> intersections; 
+    std::vector<Intersection> intersection_list; 
 
-    Matrix s_trans_inv = this->transform.inverse(); 
+    Matrix s_trans_inv = this->getTransform().inverse(); 
     Ray t_ray = r.ray_transform(s_trans_inv); 
 
     Vector sphere_to_ray = t_ray.origin - Point(0.,0.,0.); 
@@ -17,33 +17,13 @@ std::vector<Intersection*> Sphere::intersect(const Ray& r) const
     double discriminant = b*b - 4 * a * c; 
 
     if(discriminant < 0)
-        return intersections; 
+        return intersection_list; 
 
-    intersections.push_back(new Intersection((-b - sqrt(discriminant))/(2*a),this)); 
-    intersections.push_back(new Intersection((-b + sqrt(discriminant))/(2*a),this));
+    intersection_list.push_back(Intersection((-b - sqrt(discriminant))/(2*a),this)); 
+    intersection_list.push_back(Intersection((-b + sqrt(discriminant))/(2*a),this));
     
-    return intersections; 
+    return intersection_list; 
 
-}
-
-Matrix Sphere::getTransform() const
-{
-    return this->transform; 
-}
-
-void Sphere::setTransform(const Matrix& m)
-{
-    this->transform = m; 
-}
-
-void Sphere::setMaterial(const Material& m)
-{
-    this->mat = m; 
-}
-
-Material Sphere::getMaterial() const
-{
-    return this->mat; 
 }
 
 Vector Sphere::normal_at(const Point& world_point) const
@@ -55,7 +35,6 @@ Vector Sphere::normal_at(const Point& world_point) const
     m.transpose();  
     Vector world_normal =  m * object_normal; 
     world_normal.w = 0; 
-    world_normal.normalize(); 
-    
-    return world_normal; 
+    return world_normal.normalize(); 
+
 }

@@ -46,11 +46,11 @@ TEST_CASE("Intersecting a scaled sphere with a ray","[sphere]")
     Ray r(Point(0,0,-5),Vector(0,0,1)); 
     Sphere s; 
     s.setTransform(scaling(2,2,2)); 
-    std::vector<Intersection*> xs = s.intersect(r); 
+    std::vector<Intersection> xs = s.intersect(r); 
 
     REQUIRE(xs.size() == 2); 
-    REQUIRE(xs[0]->t == 3); 
-    REQUIRE(xs[1]->t == 7); 
+    REQUIRE(xs[0].t == 3); 
+    REQUIRE(xs[1].t == 7); 
 }
 
 TEST_CASE("Intersecting a translated sphere with a ray","[sphere]")
@@ -58,7 +58,7 @@ TEST_CASE("Intersecting a translated sphere with a ray","[sphere]")
     Ray r(Point(0,0,-5),Vector(0,0,1)); 
     Sphere s; 
     s.setTransform(translation(5,0,0)); 
-    std::vector<Intersection*> xs = s.intersect(r); 
+    std::vector<Intersection> xs = s.intersect(r); 
 
     REQUIRE(xs.size() == 0); 
 }

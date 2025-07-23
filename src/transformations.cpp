@@ -74,3 +74,23 @@ Matrix skew(double x_y,double x_z,double y_x,double y_z,double z_x,double z_y)
 
     return A; 
 }
+
+Matrix view_transform(const Point& from, const Point& to, const Vector& up)
+{
+    Vector forward = to - from; 
+    forward = forward.normalize(); 
+    Vector upn = up.normalize(); 
+    Vector left = forward ^ upn; 
+    Vector true_up = left ^ forward; 
+
+    std::vector<double> data = {
+        left.x,left.y,left.z,0,
+        true_up.x, true_up.y, true_up.z,0,
+        -forward.x, -forward.y, -forward.z, 0, 
+        0, 0, 0, 1
+    }; 
+
+    Matrix orientation(4,4,data); 
+
+    return orientation * translation(-from.x,-from.y,-from.z); 
+}

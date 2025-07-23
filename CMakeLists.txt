@@ -13,6 +13,8 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(Catch2)
 
+find_package(OpenMP REQUIRED)
+
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
 
@@ -47,5 +49,12 @@ file(GLOB_RECURSE DEMO_FILES "demo3/*.cpp")
 add_executable(demo3 ${DEMO_FILES})
 target_link_libraries(demo3 PRIVATE raytracer_core)
 target_include_directories(demo3 PRIVATE ${PROJECT_SOURCE_DIR}/include)
+
+# Demo4
+file(GLOB_RECURSE DEMO_FILES "demo4/*.cpp")
+add_executable(demo4 ${DEMO_FILES})
+target_link_libraries(demo4 PRIVATE raytracer_core)
+target_link_libraries(demo4 PRIVATE OpenMP::OpenMP_CXX)
+target_include_directories(demo4 PRIVATE ${PROJECT_SOURCE_DIR}/include)
 
 

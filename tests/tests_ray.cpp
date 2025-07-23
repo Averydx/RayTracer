@@ -10,6 +10,8 @@
 #include "transformations.h"
 #include "ray.h"
 #include "sphere.h"
+#include "intersection.h"
+#include "shape.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -45,27 +47,27 @@ TEST_CASE("Ray traversal","[ray]")
     REQUIRE(pos3 == Point(4.5,3,4)); 
 }
 
-TEST_CASE("Ray sphere intersection")
+TEST_CASE("Ray sphere intersection","[ray]")
 {
     SECTION("Two intersections")
     {
         Ray r(Point(0,0,-5), Vector(0,0,1)); 
         Sphere s; 
 
-        std::vector<Intersection*> intersections = s.intersect(r); 
+        std::vector<Intersection> intersections = s.intersect(r); 
 
-        REQUIRE(intersections[0]->t == 4.f); 
-        REQUIRE(intersections[1]->t == 6.f); 
+        REQUIRE(intersections[0].t == 4.f); 
+        REQUIRE(intersections[1].t == 6.f); 
     }
     SECTION("One intersection")
     {
         Ray r(Point(0,1,-5), Vector(0,0,1)); 
         Sphere s; 
 
-        std::vector<Intersection*> intersections = s.intersect(r); 
+        std::vector<Intersection> intersections = s.intersect(r); 
 
-        REQUIRE(intersections[0]->t == 5.f); 
-        REQUIRE(intersections[1]->t == 5.f); 
+        REQUIRE(intersections[0].t == 5.f); 
+        REQUIRE(intersections[1].t == 5.f); 
     }
 
     SECTION("No intersections")
@@ -73,7 +75,7 @@ TEST_CASE("Ray sphere intersection")
         Ray r(Point(0,2,-5), Vector(0,0,1)); 
         Sphere s; 
 
-        std::vector<Intersection*> intersections = s.intersect(r); 
+        std::vector<Intersection> intersections = s.intersect(r); 
 
         REQUIRE(intersections.size() == 0); 
     }
@@ -83,11 +85,11 @@ TEST_CASE("Ray sphere intersection")
         Ray r(Point(0,0.,0.), Vector(0,0,1)); 
         Sphere s; 
 
-        std::vector<Intersection*> intersections = s.intersect(r); 
+        std::vector<Intersection> intersections = s.intersect(r); 
 
         REQUIRE(intersections.size() == 2); 
-        REQUIRE(intersections[0]->t == -1.f); 
-        REQUIRE(intersections[1]->t == 1.f); 
+        REQUIRE(intersections[0].t == -1.f); 
+        REQUIRE(intersections[1].t == 1.f); 
     }
 
     SECTION("Ray in front of sphere")
@@ -95,11 +97,11 @@ TEST_CASE("Ray sphere intersection")
         Ray r(Point(0,0.,5.), Vector(0,0,1)); 
         Sphere s; 
 
-        std::vector<Intersection*> intersections = s.intersect(r); 
+        std::vector<Intersection> intersections = s.intersect(r); 
 
         REQUIRE(intersections.size() == 2); 
-        REQUIRE(intersections[0]->t == -6.f); 
-        REQUIRE(intersections[1]->t == -4.f); 
+        REQUIRE(intersections[0].t == -6.f); 
+        REQUIRE(intersections[1].t == -4.f); 
     }
 }
 
@@ -117,10 +119,10 @@ TEST_CASE("Aggregating intersections","[ray]")
     Intersection i1(1.f,&s);
     Intersection i2(2.f,&s);
 
-    std::vector<Intersection*> xs = intersections({&i1,&i2}); 
+    std::vector<Intersection> xs = intersections({i1,i2}); 
     REQUIRE(xs.size() == 2); 
-    REQUIRE(xs[0]->s == &s); 
-    REQUIRE(xs[1]->s == &s); 
+    REQUIRE(xs[0].s == &s); 
+    REQUIRE(xs[1].s == &s); 
 
 }
 
@@ -136,10 +138,11 @@ TEST_CASE("Hit tests","[ray]")
         Intersection i4(1.5f,&s);
 
 
-        std::vector<Intersection*> xs = intersections({&i1,&i2,&i3,&i4}); 
-        Intersection* I = find_hit(xs); 
+        std::vector<Intersection> xs = intersections({i1,i2,i3,i4}); 
+        const Intersection* I = find_hit(xs); 
 
-        REQUIRE(I == &i1); 
+        REQUIRE(I->t == 1.f);
+        REQUIRE(I->s == &s);  
     }
     SECTION("Some negative t")
     {
@@ -149,10 +152,11 @@ TEST_CASE("Hit tests","[ray]")
         Intersection i4(1.5f,&s);
 
 
-        std::vector<Intersection*> xs = intersections({&i1,&i2,&i3,&i4}); 
-        Intersection* I = find_hit(xs); 
+        std::vector<Intersection> xs = intersections({i1,i2,i3,i4}); 
+        const Intersection* I = find_hit(xs); 
 
-        REQUIRE(I == &i4); 
+        REQUIRE(I->t == 1.5f);
+        REQUIRE(I->s == &s);  
     }
     SECTION("All negative t")
     {
@@ -162,8 +166,8 @@ TEST_CASE("Hit tests","[ray]")
         Intersection i4(-1.5f,&s);
 
 
-        std::vector<Intersection*> xs = intersections({&i1,&i2,&i3,&i4}); 
-        Intersection* I = find_hit(xs); 
+        std::vector<Intersection> xs = intersections({i1,i2,i3,i4}); 
+        const Intersection* I = find_hit(xs); 
 
         REQUIRE(I == nullptr); 
     }

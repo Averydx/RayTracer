@@ -206,3 +206,52 @@ TEST_CASE("Chained Transformations")
     }
 
 }
+
+TEST_CASE("View transformations","[transformations]")
+{
+    SECTION("The transformation matrix for the default orientation")
+    {
+        Point from(0,0,0); 
+        Point to(0,0,-1); 
+        Vector up(0,1,0); 
+
+        Matrix t = view_transform(from,to,up); 
+
+        Matrix I(4,4); 
+        I.setIdentity(); 
+
+        REQUIRE(t == I); 
+    }
+
+    SECTION("The view transformation moves the world")
+    {
+        Point from(0,0,8); 
+        Point to(0,0,0); 
+        Vector up(0,1,0); 
+
+        Matrix t = view_transform(from,to,up); 
+
+        REQUIRE(t == translation(0,0,-8)); 
+    }
+
+    SECTION("an arbitrary view transformation")
+    {
+        Point from(1,3,2); 
+        Point to(4,-2,8); 
+        Vector up(1,1,0); 
+
+        Matrix t = view_transform(from,to,up); 
+
+        std::vector<double> desired_data = {
+            -.50709,0.50709,0.67612,-2.36643,
+            0.76772,0.60609,0.12122,-2.82843,
+            -0.35857,0.59761,-0.71714,0.0,
+            0,0,0,1}; 
+
+        Matrix desired(4,4,desired_data); 
+
+        REQUIRE(t == desired); 
+    }
+
+
+}

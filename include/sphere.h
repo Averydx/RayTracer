@@ -16,23 +16,12 @@ class Sphere : public Shape
     public:
 
         //Constructors
-        Sphere():transform(Matrix(4,4)),mat(Material()) {this->transform.setIdentity();}
-        std::vector<Intersection*> intersect(const Ray& r) const override; 
-
-        //getters-setters
-        void setTransform(const Matrix& m); 
-        Matrix getTransform() const; 
-
-        void setMaterial(const Material& m); 
-        Material getMaterial() const; 
+        Sphere():Shape(){}
+        std::vector<Intersection> intersect(const Ray& r) const override; 
 
         //methods
-        Vector normal_at(const Point& world_point) const; 
+        Vector normal_at(const Point& world_point) const override; 
 
-    private: 
-        //fields
-        Matrix transform;  
-        Material mat;
 }; 
 
 #endif

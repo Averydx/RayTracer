@@ -26,7 +26,7 @@ class Vector : public Tuple
 
         //Methods
         double magnitude() const; 
-        void normalize(); 
+        Vector normalize() const; 
         void printVector() const; 
         Vector reflect_vector(const Vector& normal) const; 
 

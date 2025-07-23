@@ -9,7 +9,7 @@ Ray::Ray(const Point& origin, const Vector& direction)
     this->direction = direction; 
 }
 
-Point Ray::position(double t)
+Point Ray::position(double t) const
 {
     return this->origin + this->direction * t; 
 }

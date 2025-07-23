@@ -65,13 +65,16 @@ double Vector::magnitude() const
     return sqrt(x*x + y*y + z*z + w*w); 
 }
 
-void Vector::normalize()
+Vector Vector::normalize() const
 {
     double mag = this->magnitude(); 
-    this->x /= mag; 
-    this->y /= mag; 
-    this->z /= mag; 
-    this->w /= mag; 
+    Vector v; 
+    v.x = this->x / mag;
+    v.y = this->y / mag;
+    v.z = this->z / mag;
+    v.w = this->w / mag;
+
+    return v;
 }
 
 Vector Vector::reflect_vector(const Vector& normal) const

@@ -17,7 +17,7 @@ class Ray
         Ray(const Point& origin,const Vector& direction); 
 
         //methods
-        Point position(double t); 
+        Point position(double t) const; 
         Ray ray_transform(const Matrix& m) const; 
 
 }; 

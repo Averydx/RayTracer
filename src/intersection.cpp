@@ -1,39 +1,36 @@
 #include "intersection.h"
+#include "ray.h"
+#include "shape.h"
+
 #include <algorithm>
 #include <iostream>
-
-Intersection::Intersection(double t, const Shape* s)
-{
-    this->t = t; 
-    this->s = s; 
-} 
 
 void Intersection::printIntersection()
 {
     std::cout<<"Intersection with time: "<<this->t<<std::endl<<"at Shape ID: "<<this->s<<std::endl; 
 }
 
-std::vector<Intersection*> intersections(std::initializer_list<Intersection*> items)
+std::vector<Intersection> intersections(std::initializer_list<Intersection> items)
 {
-    return std::vector<Intersection*>(items);
+    return std::vector<Intersection>(items);
 }
 
-Intersection* find_hit(std::vector<Intersection*> list)
+const Intersection* find_hit(const std::vector<Intersection>& list)
 {
 
-    Intersection* hit = nullptr; 
-    for(Intersection* I : list)
+    const Intersection* hit = nullptr; 
+    for(const Intersection& I : list)
     {
-        if(I!= nullptr && I->t > 0)
+        if(I.t > 0)
         {
             if(hit == nullptr)
             {
-                hit = I; 
+                hit = &I; 
             }
 
-            else if(I->t < hit->t)
+            else if(I.t < hit->t)
             {
-                hit = I; 
+                hit = &I; 
             }
         }
 
@@ -42,6 +39,27 @@ Intersection* find_hit(std::vector<Intersection*> list)
     return hit;
 }
 
-bool comp_intersection(Intersection* a, Intersection* b) {
-    return a->t < b->t;
+Computations::Computations(const Intersection& I, const Ray& r)
+{
+    this->t = I.t; 
+    this->s = I.s; 
+
+    //precompute some useful values 
+    this->point = r.position(this->t); 
+    this->eyev = -r.direction;
+    this->normalv = this->s->normal_at(this->point); 
+
+    if((this->normalv * this->eyev) < 0)
+    {
+        this->inside = true; 
+        this->normalv = -this->normalv; 
+    }
+    else 
+    {
+        this->inside = false; 
+    }
+}
+
+bool comp_intersection(Intersection a, Intersection b) {
+    return a.t < b.t;
 }

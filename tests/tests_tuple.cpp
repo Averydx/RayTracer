@@ -185,9 +185,9 @@ TEST_CASE("Dot product of vectors","[vector]")
 TEST_CASE("Normalization of Vector","[vector]")
 {
     Vector v1 =  Vector(1.,1.,1.); 
-    v1.normalize(); 
+    Vector v2= v1.normalize(); 
 
-    REQUIRE(equal_double(v1.magnitude(),1.f)); 
+    REQUIRE(equal_double(v2.magnitude(),1.f)); 
 }
 
 

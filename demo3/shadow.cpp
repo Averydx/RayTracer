@@ -43,9 +43,9 @@ int main(int argc, char *argv[])
             dir.normalize();
             Ray r(ray_origin,dir);
 
-            std::vector<Intersection*> xs = s.intersect(r); 
+            std::vector<Intersection> xs = s.intersect(r); 
 
-            Intersection* hit = find_hit(xs); 
+            const Intersection* hit = find_hit(xs); 
             if(hit != nullptr)
             {
                 Point p = r.position(hit->t); 

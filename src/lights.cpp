@@ -7,6 +7,12 @@ pointLight::pointLight(Color light_inten, Point light_pos)
     this->position = light_pos; 
 }
 
+pointLight::pointLight()
+{
+    this->intensity = Color(1.,1,1); 
+    this->position = Point(0,0,0); 
+}
+
 Color lighting(const Material& mat, const pointLight& light, const Point& point, const Vector& eye_vec, const Vector& normal_vec)
 {
     //combine surface color with the light's color/intensity
@@ -14,7 +20,7 @@ Color lighting(const Material& mat, const pointLight& light, const Point& point,
 
     //find the direction to the light source
     Vector light_vec = light.position - point;
-    light_vec.normalize();
+    light_vec = light_vec.normalize();
 
     //compute the ambient contribution
     Color ambient = effective_color * mat.ambient; 
