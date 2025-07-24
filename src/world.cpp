@@ -38,7 +38,8 @@ std::vector<Intersection> World::intersect(const Ray& ray) const
 
 Color World::shade_hit(const Computations& comps) const
 {
-    return lighting(comps.s->mat,this->world_light,comps.point,comps.eyev,comps.normalv); 
+    bool in_shadow = this->is_shadowed(comps.over_point); 
+    return lighting(comps.s->mat,this->world_light,comps.over_point,comps.eyev,comps.normalv,in_shadow); 
 }
 
 Color World::color_at(const Ray& ray) const
@@ -52,4 +53,19 @@ Color World::color_at(const Ray& ray) const
     Computations comps(*hit,ray);
     
     return shade_hit(comps); 
+}
+
+bool World::is_shadowed(const Point& point) const
+{
+    Vector shadow_vec = this->world_light.position - point; 
+    double distance = shadow_vec.magnitude(); 
+    Ray shadow_ray(point,shadow_vec.normalize()); 
+
+    std::vector<Intersection> inters = this->intersect(shadow_ray); 
+    const Intersection* hit = find_hit(inters); 
+
+    if(hit != nullptr && hit->t < distance)
+        return true; 
+
+    return false; 
 }

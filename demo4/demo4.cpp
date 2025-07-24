@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
     w.world_objects.push_back(middle); 
     w.world_objects.push_back(right); 
 
-    Camera cam(1920,1080,M_PI/3.f);
+    Camera cam(600,400,M_PI/3.f);
     cam.transform = view_transform(Point(0,1.5,-5),Point(0,1,0),Vector(0,1,0));  
 
     Canvas image = render(cam,w); 

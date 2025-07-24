@@ -18,6 +18,6 @@ class pointLight
         pointLight(); 
 }; 
 
-Color lighting(const Material& mat, const pointLight& light, const Point& point, const Vector& eye_vec, const Vector& normal_vec); 
+Color lighting(const Material& mat, const pointLight& light, const Point& point, const Vector& eye_vec, const Vector& normal_vec,bool in_shadow = false); 
 
 #endif

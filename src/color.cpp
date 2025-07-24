@@ -1,5 +1,7 @@
-#include <color.h>
+#include "color.h"
 #include "tools.h"
+
+#include <iostream> 
 
 Color::Color(double r, double g, double b) 
     : Tuple(r, g, b, 0.0) {}
@@ -66,5 +68,10 @@ void Color::clamp(int min, int max)
     this->x = round(x); 
     this->y = round(y); 
     this->z = round(z); 
+}
+
+void Color::printColor() const
+{
+    std::cout<<"Red: "<<this->x<<" Green: " <<this->y << " Blue: " << this->z<<std::endl; 
 }
 

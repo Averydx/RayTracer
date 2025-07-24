@@ -1,6 +1,7 @@
 #include "intersection.h"
 #include "ray.h"
 #include "shape.h"
+#include "tools.h"
 
 #include <algorithm>
 #include <iostream>
@@ -58,6 +59,9 @@ Computations::Computations(const Intersection& I, const Ray& r)
     {
         this->inside = false; 
     }
+
+    //Make sure to do this after checking whether the normal vector needs to be negated. 
+    this->over_point = this->point + this->normalv * EPSILON; 
 }
 
 bool comp_intersection(Intersection a, Intersection b) {

@@ -8,6 +8,8 @@
 *
 */
 
+constexpr double EPSILON = 0.01; 
+
 bool equal_double(double a, double b); 
 
 #endif

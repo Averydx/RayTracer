@@ -1,11 +1,10 @@
-#include <cmath>
+#include "tools.h"
 
-
-const double epsilon = 0.01;
+#include <math.h>
 
 bool equal_double(double a, double b)
 {
-    if(abs(a-b) < epsilon)
+    if(abs(a-b) < EPSILON)
     {
         return true; 
     }

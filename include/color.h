@@ -24,6 +24,7 @@ class Color : public Tuple
 
         //Functions
         void clamp(int min, int max); 
+        void printColor() const; 
 }; 
 
 #endif 

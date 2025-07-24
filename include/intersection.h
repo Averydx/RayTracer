@@ -30,6 +30,7 @@ class Computations
         double t; 
         const Shape* s; 
         Point point; 
+        Point over_point; 
         Vector eyev; 
         Vector normalv; 
         bool inside; 

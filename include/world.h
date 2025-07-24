@@ -28,6 +28,7 @@ class World
     //helper functions 
     std::vector<Intersection> intersect(const Ray& ray) const; 
     Color shade_hit(const Computations& comps) const; 
+    bool World::is_shadowed(const Point& point) const; 
 
 }; 
 
