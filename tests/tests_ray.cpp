@@ -9,7 +9,7 @@
 #include "matrix.h"
 #include "transformations.h"
 #include "ray.h"
-#include "sphere.h"
+#include "shapes.h"
 #include "intersection.h"
 #include "shape.h"
 

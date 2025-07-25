@@ -9,24 +9,29 @@
 #include "matrix.h"
 #include "transformations.h"
 #include "ray.h"
-#include "sphere.h"
+#include "shapes.h"
 #include "materials.h"
+#include "intersection.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <iostream>
 #include <fstream>
 #include <array>
+#include <type_traits>
 
-TEST_CASE("Creating a sphere","[sphere]")
+TEST_CASE("Creating a sphere","[sphere][shape]")
 {
     Sphere s;
     Matrix I(4,4); 
     I.setIdentity(); 
     REQUIRE(s.getTransform() == I); 
+
+    Shape* shapePtr = &s;
+    REQUIRE(dynamic_cast<Sphere*>(shapePtr) != nullptr);
 }
 
-TEST_CASE("Sphere default transform","[sphere]")
+TEST_CASE("Sphere default transform","[sphere][shape]")
 {
     Sphere s;
     Matrix m(4,4); 
@@ -34,14 +39,14 @@ TEST_CASE("Sphere default transform","[sphere]")
     REQUIRE(s.getTransform() == m); 
 }
 
-TEST_CASE("Changing a sphere's transform","[sphere]")
+TEST_CASE("Changing a sphere's transform","[sphere][shape]")
 {
     Sphere s;
     Matrix t = translation(2,3,4); 
     s.setTransform(t); 
 }
 
-TEST_CASE("Intersecting a scaled sphere with a ray","[sphere]")
+TEST_CASE("Intersecting a scaled sphere with a ray","[sphere][shape]")
 {
     Ray r(Point(0,0,-5),Vector(0,0,1)); 
     Sphere s; 
@@ -53,7 +58,7 @@ TEST_CASE("Intersecting a scaled sphere with a ray","[sphere]")
     REQUIRE(xs[1].t == 7); 
 }
 
-TEST_CASE("Intersecting a translated sphere with a ray","[sphere]")
+TEST_CASE("Intersecting a translated sphere with a ray","[sphere][shape]")
 {
     Ray r(Point(0,0,-5),Vector(0,0,1)); 
     Sphere s; 
@@ -63,7 +68,7 @@ TEST_CASE("Intersecting a translated sphere with a ray","[sphere]")
     REQUIRE(xs.size() == 0); 
 }
 
-TEST_CASE("Computing sphere normal vectors","[sphere]")
+TEST_CASE("Computing sphere normal vectors","[sphere][shape]")
 {
     Sphere s; 
 
@@ -94,7 +99,7 @@ TEST_CASE("Computing sphere normal vectors","[sphere]")
     }
 }
 
-TEST_CASE("Normal on transformed sphere","[sphere]")
+TEST_CASE("Normal on transformed sphere","[sphere][shape]")
 {
     Sphere s;
     SECTION("Normal on translated sphere")
@@ -112,7 +117,7 @@ TEST_CASE("Normal on transformed sphere","[sphere]")
     }
 }
 
-TEST_CASE("Vector reflection about the normal","[sphere]")
+TEST_CASE("Vector reflection about the normal","[sphere][shape]")
 {
     SECTION("reflection of vector approaching at 45 deg")
     {
@@ -133,7 +138,7 @@ TEST_CASE("Vector reflection about the normal","[sphere]")
     }
 }
 
-TEST_CASE("Sphere material properties","[sphere]")
+TEST_CASE("Sphere material properties","[sphere][shape]")
 {
     Sphere s; 
     SECTION("default material")
@@ -158,3 +163,57 @@ TEST_CASE("Sphere material properties","[sphere]")
         REQUIRE(s_m.mat_color == Color(1,0,0));  
     }
 }
+
+TEST_CASE("The normal of a plane is constant everywhere","[plane][shape]")
+{
+    Plane p; 
+    Vector n1 = p.local_normal_at(Point(0,0,0)); 
+    Vector n2 = p.local_normal_at(Point(10,0,-10)); 
+    Vector n3 = p.local_normal_at(Point(-5,0,150)); 
+
+    REQUIRE(n1 == Vector(0,1,0)); 
+    REQUIRE(n2 == Vector(0,1,0)); 
+    REQUIRE(n3 == Vector(0,1,0)); 
+}
+
+TEST_CASE("Ray plane intersections","[plane][shape]")
+{
+    Plane p;
+    SECTION("Intersect with a ray parallel to the plane")
+    {
+        Ray r(Point(0,10,0),Vector(0,0,1)); 
+        std::vector<Intersection> xs = p.local_intersect(r); 
+
+        REQUIRE(xs.size() == 0); 
+    }
+
+    SECTION("Intersect with a coplanar ray")
+    {
+        Ray r(Point(0,0,0),Vector(0,0,1)); 
+        std::vector<Intersection> xs = p.local_intersect(r); 
+
+        REQUIRE(xs.size() == 0); 
+    }
+    SECTION("A ray intersecting a plane from above")
+    {
+        Ray r(Point(0,1,0),Vector(0,-1,0)); 
+        std::vector<Intersection> xs = p.local_intersect(r); 
+
+        REQUIRE(xs.size() == 1); 
+        REQUIRE(xs[0].t == 1); 
+        REQUIRE(xs[0].s == &p); 
+    }
+        SECTION("A ray intersecting a plane from below")
+    {
+        Ray r(Point(0,-1,0),Vector(0,1,0)); 
+        std::vector<Intersection> xs = p.local_intersect(r); 
+
+        REQUIRE(xs.size() == 1); 
+        REQUIRE(xs[0].t == 1); 
+        REQUIRE(xs[0].s == &p); 
+    }
+
+
+}
+
+

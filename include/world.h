@@ -2,7 +2,7 @@
 #define WORLD_H
 
 #include "lights.h"
-#include "sphere.h"
+#include "shapes.h"
 #include "ray.h"
 #include "intersection.h"
 #include "color.h"

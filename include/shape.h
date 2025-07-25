@@ -12,8 +12,12 @@ class Shape
     public: 
         Shape():transform(Matrix(4,4)),mat(Material()) {this->transform.setIdentity();}
         virtual ~Shape() = default;
-        virtual std::vector<Intersection> intersect(const Ray& r) const = 0;
-        virtual Vector normal_at(const Point& world_point) const = 0; 
+
+        std::vector<Intersection> intersect(const Ray& r) const;
+        Vector normal_at(const Point& world_point) const; 
+
+        virtual std::vector<Intersection> local_intersect(const Ray& r) const = 0; 
+        virtual Vector local_normal_at(const Point& object_point) const = 0; 
 
         void setTransform(const Matrix& m); 
         Matrix getTransform() const; 

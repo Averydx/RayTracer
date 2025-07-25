@@ -10,7 +10,7 @@
 #include "matrix.h"
 #include "transformations.h"
 #include "ray.h"
-#include "sphere.h"
+#include "shapes.h"
 #include "lights.h"
 #include "materials.h"
 #include "world.h"

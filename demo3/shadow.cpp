@@ -1,6 +1,6 @@
 #include "ray.h"
 #include "canvas.h"
-#include "sphere.h"
+#include "shapes.h"
 #include "intersection.h"
 #include "vector.h"
 #include "point.h"
