@@ -36,13 +36,16 @@ std::vector<Intersection> World::intersect(const Ray& ray) const
     return intersection_list; 
 }
 
-Color World::shade_hit(const Computations& comps) const
+Color World::shade_hit(const Computations& comps,int remaining) const
 {
     bool in_shadow = this->is_shadowed(comps.over_point); 
-    return lighting(comps.s->mat,this->world_light,comps.over_point,comps.eyev,comps.normalv,in_shadow); 
+    Color surface =  lighting(comps.s->mat,comps.s,this->world_light,comps.over_point,comps.eyev,comps.normalv,in_shadow);
+    Color reflected = this->reflected_color(comps,remaining); 
+    
+    return surface + reflected; 
 }
 
-Color World::color_at(const Ray& ray) const
+Color World::color_at(const Ray& ray,int remaining) const
 {
     std::vector<Intersection> _ints = this->intersect(ray); 
     const Intersection* hit = find_hit(_ints); 
@@ -52,7 +55,7 @@ Color World::color_at(const Ray& ray) const
 
     Computations comps(*hit,ray);
     
-    return shade_hit(comps); 
+    return shade_hit(comps,remaining); 
 }
 
 bool World::is_shadowed(const Point& point) const
@@ -68,4 +71,18 @@ bool World::is_shadowed(const Point& point) const
         return true; 
 
     return false; 
+}
+
+Color World::reflected_color(const Computations& comps,int remaining) const
+{
+    if(remaining <= 1)
+        return Color(0.f,0.f,0.f); 
+
+    if(comps.s->mat.reflective == 0.f)
+        return Color(0.f,0.f,0.f); 
+
+    Ray reflect_ray(comps.over_point,comps.reflectv); 
+    Color color = this->color_at(reflect_ray,remaining-1); 
+
+    return color * comps.s->mat.reflective; 
 }

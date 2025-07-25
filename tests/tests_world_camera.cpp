@@ -79,6 +79,15 @@ TEST_CASE("Checking whether hit is inside or outside","[computations]")
     
 }
 
+TEST_CASE("Precomputing the reflection vector","[computations]")
+{
+    Plane shape; 
+    Ray r(Point(0,1,-1),Vector(0,-sqrt(2)/2.f,sqrt(2)/2.f)); 
+    Intersection I(sqrt(2),&shape); 
+    Computations comps(I,r); 
+    REQUIRE(comps.reflectv == Vector(0,sqrt(2)/2.f,sqrt(2)/2.f)); 
+}
+
 TEST_CASE("Point colors", "[world]")
 {
     World w; 

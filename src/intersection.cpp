@@ -62,6 +62,7 @@ Computations::Computations(const Intersection& I, const Ray& r)
 
     //Make sure to do this after checking whether the normal vector needs to be negated. 
     this->over_point = this->point + this->normalv * EPSILON; 
+    this->reflectv = r.direction.reflect_vector(this->normalv); 
 }
 
 bool comp_intersection(Intersection a, Intersection b) {

@@ -2,7 +2,9 @@
 #define COLOR_H
 
 #include "tuple.h"
-#include <cmath>
+#include "point.h"
+
+#include <math.h>
 
 class Color : public Tuple
 {
@@ -26,5 +28,8 @@ class Color : public Tuple
         void clamp(int min, int max); 
         void printColor() const; 
 }; 
+
+
+
 
 #endif 

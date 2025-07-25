@@ -10,6 +10,7 @@
 #include <vector>
 #include <memory>
 
+constexpr int MAX_DEPTH = 5; 
 
 class World
 {
@@ -23,12 +24,13 @@ class World
     ~World(); 
 
     //methods
-    Color color_at(const Ray& ray) const; 
+    Color color_at(const Ray& ray,int remaining = MAX_DEPTH) const; 
 
     //helper functions 
     std::vector<Intersection> intersect(const Ray& ray) const; 
-    Color shade_hit(const Computations& comps) const; 
+    Color shade_hit(const Computations& comps,int remaining = MAX_DEPTH) const; 
     bool World::is_shadowed(const Point& point) const; 
+    Color reflected_color(const Computations& comps,int remaining = MAX_DEPTH) const; 
 
 }; 
 

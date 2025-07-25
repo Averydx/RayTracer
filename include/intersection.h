@@ -33,6 +33,7 @@ class Computations
         Point over_point; 
         Vector eyev; 
         Vector normalv; 
+        Vector reflectv; 
         bool inside; 
 
         Computations(const Intersection& I,const Ray& r); 

@@ -18,36 +18,32 @@
 int main(int argc, char *argv[])
 {
     Plane* floor = new Plane(); 
+    floor->mat.pattern = new CheckerPattern(Color(1.f,1.f,1.f),Color(0.f,0.f,0.f));
+    floor->mat.reflective = 0.5f;  
+
     Plane* wall = new Plane(); 
+    wall->mat.mat_color = Color(0.5,0.5,0.5); 
+    wall->mat.reflective = 0.5f;  
 
     wall->setTransform(translation(0,0,5)*rotation_x(M_PI/2.f)); 
 
-    // Sphere* floor = new Sphere(); 
-    // floor->transform = scaling(10,0.01,10); 
-    // floor->mat.mat_color = Color(1,0.9,0.9); 
-    // floor->mat.specular = 0; 
-
-    // Sphere* left_wall = new Sphere(); 
-    // left_wall->transform = (translation(0,0,5) * rotation_y(-M_PI/4.f) * rotation_x(M_PI/2.f) * scaling(10,0.01,10)); 
-    // left_wall->mat = floor->mat; 
-
-    // Sphere* right_wall = new Sphere(); 
-    // right_wall->transform = (translation(0,0,5) * rotation_y(M_PI/4.f) * rotation_x(M_PI/2.f) * scaling(10,0.01,10)); 
-    // right_wall->mat = floor->mat; 
-
     Sphere* middle = new Sphere(); 
-    middle->transform = translation(-0.5,1,0.5); 
+    middle->transform =  translation(-0.5,1,0.5) * rotation_x(M_PI/4.f); 
     middle->mat = Material(); 
-    middle->mat.mat_color = Color(0.1,1,0.5); 
+    middle->mat.pattern = new CheckerPattern(Color(1.f,0.5f,0.25f),Color(0.f,0.f,0.f)); 
+    middle->mat.pattern->transform = scaling(0.5,0.5,0.5); 
     middle->mat.diffuse = 0.7; 
     middle->mat.specular = 0.3; 
+    middle->mat.reflective = 0.5f; 
 
     Sphere* right = new Sphere(); 
     right->transform = translation(1.5,0.5,-0.5) * scaling(0.5,0.5,0.5); 
     right->mat = Material(); 
+    right->mat.pattern = new GradientPattern(Color(1.f,0.f,1.f),Color(0.f,0.5f,0.f)); 
+    right->mat.pattern->transform = scaling(0.3,0.3,0.3); 
     right->mat.diffuse = 0.7; 
-    right->mat.mat_color = Color(0.5,1,0.1); 
     right->mat.specular = 0.3; 
+    right->mat.reflective = 0.5f; 
 
     Sphere* left = new Sphere(); 
     left->transform = translation(-1.5,0.33,-0.75) * scaling(0.33,0.33,0.33); 
@@ -55,6 +51,7 @@ int main(int argc, char *argv[])
     left->mat.diffuse = 0.7; 
     left->mat.mat_color = Color(1,0.8,0.1); 
     left->mat.specular = 0.3; 
+    left->mat.reflective = 1.0f; 
 
     World w; 
     w.world_light.position = Point(10,10,-10); 
@@ -72,7 +69,7 @@ int main(int argc, char *argv[])
     w.world_objects.push_back(middle); 
     w.world_objects.push_back(right); 
 
-    Camera cam(600,400,M_PI/3.f);
+    Camera cam(1920,1080,M_PI/3.f);
     cam.transform = view_transform(Point(0,1.5,-5),Point(0,1,0),Vector(0,1,0));  
 
     Canvas image = render(cam,w); 

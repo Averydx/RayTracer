@@ -16,7 +16,7 @@ bool Color::operator==(Color const& obj) const
 
 Color Color::operator-(Color const& obj) const
 {
-    return Color(this->x - obj.x,this->y - obj.y, this->z - obj.z); 
+    return Color (this->x - obj.x,this->y - obj.y, this->z - obj.z); 
 }
 
 Color Color::operator+(Color const& obj) const

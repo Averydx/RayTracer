@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 
                 Vector eye = -r.direction; 
 
-                Color color = lighting(sphere->getMaterial(),light,p,eye,normal); 
+                Color color = lighting(sphere->getMaterial(),sphere, light,p,eye,normal); 
 
                 c.SetPixel(x,y,color);
             }

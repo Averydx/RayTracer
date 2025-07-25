@@ -14,13 +14,17 @@ pointLight::pointLight()
     this->position = Point(0,0,0); 
 }
 
-Color lighting(const Material& mat, const pointLight& light, const Point& point, const Vector& eye_vec, const Vector& normal_vec,bool in_shadow)
+Color lighting(const Material& mat, const Shape* shape, const pointLight& light, const Point& point, const Vector& eye_vec, const Vector& normal_vec,bool in_shadow)
 {
+    Color color = mat.mat_color; 
+    if(mat.pattern != nullptr)
+        color = mat.pattern->color_at_object(shape, point); 
+
     if(in_shadow)
-        return mat.mat_color * mat.ambient; 
+        return color * mat.ambient; 
 
     //combine surface color with the light's color/intensity
-    Color effective_color = mat.mat_color * light.intensity; 
+    Color effective_color = color * light.intensity; 
 
     //find the direction to the light source
     Vector light_vec = light.position - point;
@@ -28,7 +32,6 @@ Color lighting(const Material& mat, const pointLight& light, const Point& point,
 
     //compute the ambient contribution
     Color ambient = effective_color * mat.ambient; 
-
 
     /*light_dot_normal represents the cosine of the angle between the
     light vector and the normal vector. A negative number means the 
