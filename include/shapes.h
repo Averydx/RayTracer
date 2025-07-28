@@ -35,4 +35,6 @@ class Plane : public Shape
         Vector local_normal_at(const Point& world_point) const override; 
 };
 
+Sphere* glass_sphere(); 
+
 #endif

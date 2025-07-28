@@ -2,10 +2,11 @@
 #define SHAPE_H
 
 #include "ray.h"
-#include <vector> 
 #include "intersection.h"
 #include "materials.h"
 #include "matrix.h"
+
+#include <vector> 
 
 class Shape
 {
@@ -29,5 +30,8 @@ class Shape
         Matrix transform;  
         Material mat;
 }; 
+
+int scan_container(const std::vector<const Shape*>& container,const Shape* desired); 
+
 
 #endif

@@ -25,12 +25,15 @@ class World
 
     //methods
     Color color_at(const Ray& ray,int remaining = MAX_DEPTH) const; 
+    void empty_objects(); 
 
     //helper functions 
     std::vector<Intersection> intersect(const Ray& ray) const; 
     Color shade_hit(const Computations& comps,int remaining = MAX_DEPTH) const; 
     bool World::is_shadowed(const Point& point) const; 
     Color reflected_color(const Computations& comps,int remaining = MAX_DEPTH) const; 
+    Color refracted_color(const Computations& comps,int remaining = MAX_DEPTH) const; 
+    double schlick(const Computations& comps) const; 
 
 }; 
 

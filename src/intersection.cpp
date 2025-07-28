@@ -16,6 +16,14 @@ std::vector<Intersection> intersections(std::initializer_list<Intersection> item
     return std::vector<Intersection>(items);
 }
 
+bool operator==(Intersection const& obj1,Intersection const& obj2)
+{
+    if((obj1.s == obj2.s) && (obj1.t == obj2.t))
+        return true; 
+
+    return false; 
+}
+
 const Intersection* find_hit(const std::vector<Intersection>& list)
 {
 
@@ -40,8 +48,35 @@ const Intersection* find_hit(const std::vector<Intersection>& list)
     return hit;
 }
 
-Computations::Computations(const Intersection& I, const Ray& r)
+Computations::Computations(const Intersection& I, const Ray& r, const std::vector<Intersection>& xs)
 {
+    std::vector<const Shape*> container; 
+    for(Intersection x :xs)
+    {
+        if(x == I)
+        {
+            if(container.empty())
+                this->n1 = 1.0; 
+            else 
+                this->n1 = container.back()->mat.refractive_index; 
+        }
+        int check = scan_container(container, x.s); 
+        if(check == -1)
+            container.push_back(x.s); 
+        else 
+            container.erase(container.begin() + check); 
+
+        if(x == I)
+        {
+            if(container.empty())
+                this->n2 = 1.0; 
+            else 
+                this->n2 = container.back()->mat.refractive_index; 
+
+            break;
+        }
+    }
+
     this->t = I.t; 
     this->s = I.s; 
 
@@ -62,6 +97,63 @@ Computations::Computations(const Intersection& I, const Ray& r)
 
     //Make sure to do this after checking whether the normal vector needs to be negated. 
     this->over_point = this->point + this->normalv * EPSILON; 
+    this->under_point = this->point + (-1* this->normalv * EPSILON); 
+
+    this->reflectv = r.direction.reflect_vector(this->normalv); 
+}
+
+Computations::Computations(const Intersection& I, const Ray& r)
+{
+    std::vector<Intersection> xs = {I}; 
+    std::vector<const Shape*> container; 
+    for(Intersection x :xs)
+    {
+        if(x == I)
+        {
+            if(container.empty())
+                this->n1 = 1.0; 
+            else 
+                this->n1 = container.back()->mat.refractive_index; 
+        }
+        int check = scan_container(container, x.s); 
+        if(check == -1)
+            container.push_back(x.s); 
+        else 
+            container.erase(container.begin() + check); 
+
+        if(x == I)
+        {
+            if(container.empty())
+                this->n2 = 1.0; 
+            else 
+                this->n2 = container.back()->mat.refractive_index; 
+
+            break;
+        }
+    }
+
+    this->t = I.t; 
+    this->s = I.s; 
+
+    //precompute some useful values 
+    this->point = r.position(this->t); 
+    this->eyev = -r.direction;
+    this->normalv = this->s->normal_at(this->point); 
+
+    if((this->normalv * this->eyev) < 0)
+    {
+        this->inside = true; 
+        this->normalv = -this->normalv; 
+    }
+    else 
+    {
+        this->inside = false; 
+    }
+
+    //Make sure to do this after checking whether the normal vector needs to be negated. 
+    this->over_point = this->point + this->normalv * EPSILON; 
+    this->under_point = this->point + (-1* this->normalv * EPSILON); 
+
     this->reflectv = r.direction.reflect_vector(this->normalv); 
 }
 

@@ -41,8 +41,9 @@ Color World::shade_hit(const Computations& comps,int remaining) const
     bool in_shadow = this->is_shadowed(comps.over_point); 
     Color surface =  lighting(comps.s->mat,comps.s,this->world_light,comps.over_point,comps.eyev,comps.normalv,in_shadow);
     Color reflected = this->reflected_color(comps,remaining); 
+    Color refracted = this->refracted_color(comps,remaining); 
     
-    return surface + reflected; 
+    return surface + reflected + refracted; 
 }
 
 Color World::color_at(const Ray& ray,int remaining) const
@@ -53,7 +54,7 @@ Color World::color_at(const Ray& ray,int remaining) const
     if(hit == nullptr)
         return Color(0.f,0.f,0.f); 
 
-    Computations comps(*hit,ray);
+    Computations comps(*hit,ray,_ints);
     
     return shade_hit(comps,remaining); 
 }
@@ -85,4 +86,59 @@ Color World::reflected_color(const Computations& comps,int remaining) const
     Color color = this->color_at(reflect_ray,remaining-1); 
 
     return color * comps.s->mat.reflective; 
+}
+
+void World::empty_objects()
+{
+    for(Shape* s: this->world_objects)
+    {
+        delete s; 
+    }
+    this->world_objects.clear(); 
+}
+
+Color World::refracted_color(const Computations& comps,int remaining) const
+{
+    if(remaining == 0)
+        return Color(0,0,0); 
+
+    if(comps.s->mat.transparency == 0.f)
+        return Color(0,0,0); 
+
+    //Find the ratio of first index of refraction to the second
+    double ratio = comps.n1 / comps.n2; 
+    double cos_i = comps.eyev * comps.normalv; 
+
+    //Trig identity
+    double sin2_t = (ratio * ratio) * (1-(cos_i * cos_i));
+
+    //total internal reflection 
+    if(sin2_t > 1)
+        return Color(0,0,0); 
+
+    double cost_t = sqrt(1 - sin2_t); 
+
+    //direction of refracted ray
+    Vector direction = comps.normalv * (ratio * cos_i - cost_t) - comps.eyev * ratio; 
+    Ray refract_ray(comps.under_point,direction); 
+
+    Color color = this->color_at(refract_ray,remaining-1) * comps.s->mat.transparency; 
+
+    return color; 
+}
+
+double World::schlick(const Computations& comps) const
+{
+    double _cos = comps.eyev * comps.normalv; 
+
+    //total internal reflection occurs if n1 > n2
+    if(comps.n1 > comps.n2)
+    {
+        double n = comps.n1 / comps.n2; 
+        double sin2_t = n*n * (1.f - _cos*_cos); 
+        if(sin2_t > 1)
+            return 1.0; 
+    }
+
+    return 0.0; 
 }

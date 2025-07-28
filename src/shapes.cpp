@@ -49,3 +49,11 @@ std::vector<Intersection> Plane::local_intersect(const Ray& r) const
     return intersection_list; 
 }
 
+Sphere* glass_sphere()
+{
+    Sphere* s = new Sphere(); 
+    s->mat.transparency = 1.0f; 
+    s->mat.refractive_index = 1.5; 
+    return s; 
+}
+

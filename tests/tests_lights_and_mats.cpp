@@ -349,3 +349,154 @@ TEST_CASE("shade_hit() with a reflective material","[lighting]")
     REQUIRE(color == Color(0.87677,0.92436,0.82918)); 
 }
 
+//This needs more thought
+// TEST_CASE("color_at() with mutually reflective surfaces","[lighting]")
+// {
+//     World w; 
+//     w.world_light = pointLight(Point(0,0,0),Color(1,1,1)); 
+//     Plane* lower = new Plane(); 
+//     lower->mat.reflective = 1; 
+//     lower->transform = translation(0,-1,0); 
+//     w.world_objects.push_back(lower); 
+
+//     Plane* upper = new Plane(); 
+//     upper->mat.reflective = 1; 
+//     upper->transform = translation(0,1,0); 
+//     w.world_objects.push_back(upper);
+    
+//     Ray r(Point(0,0,0),Vector(0,1,0)); 
+
+//     Color c = w->color_at(r); 
+// }
+
+TEST_CASE("The reflected color at the maximum recursive depth","[lighting]")
+{
+    World w; 
+    Plane* shape = new Plane();
+    shape->mat.reflective = 0.5; 
+    shape->transform = translation(0,-1,0); 
+    w.world_objects.push_back(shape); 
+
+    Ray r(Point(0,0,-3),Vector(0,-sqrt(2)/2.f,sqrt(2)/2.f)); 
+    Intersection I(sqrt(2),shape);
+
+    Computations comps(I,r); 
+    Color color = w.reflected_color(comps,0); 
+
+    REQUIRE(color == Color(0.0,0.0,0.0)); 
+}
+
+TEST_CASE("Transparency and Refractive Index for the default material","[materials][refraction]")
+{
+    Material m; 
+    REQUIRE(equal_double(m.transparency,0.f)); 
+    REQUIRE(equal_double(m.refractive_index,1.f)); 
+}
+
+TEST_CASE("Finding n1 and n2 at various intersections","[materials][refraction]")
+{
+    std::vector<double> n1s = {1.0,1.5,2.0,2.5,2.5,1.5}; 
+    std::vector<double> n2s = {1.5,2.0,2.5,2.5,1.5,1.0}; 
+
+    Sphere* A = glass_sphere(); 
+    A->transform = scaling(2,2,2); 
+    A->mat.refractive_index = 1.5; 
+
+    Sphere* B = glass_sphere(); 
+    B->transform = translation(0,0,-0.25); 
+    B->mat.refractive_index = 2; 
+
+    Sphere* C = glass_sphere(); 
+    C->transform = translation(0,0,0.25); 
+    C->mat.refractive_index = 2.5;
+    
+    Ray r(Point(0,0,-4),Vector(0,0,1)); 
+    std::vector<Intersection> xs = intersections({Intersection(2,A),Intersection(2.75,B),Intersection(3.25,C),Intersection(4.75,B),Intersection(5.25,C),Intersection(6,A)}); 
+
+    int counter = 0; 
+    for(const Intersection& I: xs)
+    {
+        Computations comps(I,r,xs); 
+        REQUIRE(equal_double(comps.n1,n1s[counter])); 
+        REQUIRE(equal_double(comps.n2,n2s[counter])); 
+        counter++; 
+    }
+}
+
+TEST_CASE("The under point is offset below the surface","[refraction]")
+{
+    Ray r(Point(0,0,-5),Vector(0,0,1)); 
+    Sphere* shape = glass_sphere();
+    shape->transform = translation(0,0,1); 
+    Intersection I(5,shape); 
+    std::vector<Intersection> xs = intersections({I}); 
+
+    Computations comps(I,r,xs); 
+    REQUIRE(comps.under_point.z > EPSILON / 2); 
+}
+
+TEST_CASE("The refracted color with an opaque surface","[refraction]")
+{
+    World w; 
+    Ray r(Point(0,0,-5),Vector(0,0,1)); 
+    std::vector<Intersection> xs = intersections({Intersection(4,w.world_objects[0]),Intersection(6,w.world_objects[0])}); 
+    Computations comps(xs[0],r,xs); 
+    Color c = w.refracted_color(comps,5); 
+    REQUIRE(c == Color(0,0,0)); 
+}
+
+TEST_CASE("The refracted color at the maximum recursive depth","[refraction]")
+{
+    World w; 
+    w.world_objects[0]->mat.transparency = 1.f; 
+    w.world_objects[0]->mat.refractive_index = 1.5f; 
+    Ray r(Point(0,0,-5),Vector(0,0,1)); 
+    std::vector<Intersection> xs = intersections({Intersection(4,w.world_objects[0]),Intersection(6,w.world_objects[0])}); 
+    Computations comps(xs[0],r,xs); 
+    Color c = w.refracted_color(comps,0); 
+    REQUIRE(c == Color(0,0,0)); 
+}
+TEST_CASE("The refracted color under total internal reflection","[refraction]")
+{
+    World w; 
+    w.world_objects[0]->mat.transparency = 1.f; 
+    w.world_objects[0]->mat.refractive_index = 1.5f; 
+    Ray r(Point(0,0,sqrt(2)/2),Vector(0,1,0)); 
+    std::vector<Intersection> xs = intersections({Intersection(-sqrt(2)/2,w.world_objects[0]),Intersection(sqrt(2)/2,w.world_objects[0])}); 
+    //This time we are inside the sphere so we need to look at the second intersection xs[1]
+    Computations comps(xs[1],r,xs); 
+    Color c = w.refracted_color(comps,5); 
+    REQUIRE(c == Color(0,0,0)); 
+}
+
+TEST_CASE("The schlick approximation under total internal reflection","[refraction]")
+{
+    
+}
+
+TEST_CASE("shade_hit() with a transparent material","[material][refraction]")
+{
+    World w; 
+    w.empty_objects(); 
+
+    Plane* floor = new Plane(); 
+    floor->transform = translation(0,-1,0); 
+    floor->mat.transparency = 0.5; 
+    floor->mat.refractive_index = 1.5; 
+
+    Sphere* ball = new Sphere(); 
+    ball->mat.mat_color = Color(1,0,0); 
+    ball->mat.ambient = 0.5; 
+    ball->transform = translation(0,-3.5,-0.5); 
+
+    w.world_objects.push_back(floor); 
+    w.world_objects.push_back(ball); 
+
+    Ray r(Point(0,0,-3),Vector(0,-sqrt(2)/2.f,sqrt(2)/2.f)); 
+    std::vector<Intersection> xs = intersections({Intersection(sqrt(2),floor)}); 
+    Computations comps(xs[0],r,xs); 
+    Color color = w.shade_hit(comps,5); 
+
+    REQUIRE(color == Color(0.93642,0.68642,0.68642)); 
+}
+

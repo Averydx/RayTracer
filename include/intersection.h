@@ -31,21 +31,24 @@ class Computations
         const Shape* s; 
         Point point; 
         Point over_point; 
+        Point under_point; 
         Vector eyev; 
         Vector normalv; 
         Vector reflectv; 
         bool inside; 
+        double n1; 
+        double n2; 
 
-        Computations(const Intersection& I,const Ray& r); 
-};
-
+        Computations(const Intersection& I, const Ray& r); 
+        Computations(const Intersection& I, const Ray& r, const std::vector<Intersection>& xs); 
+}; 
 /*Using the initializer list here to sidestep variable argument list. 
 You can use it like -> intersections({&i1,&i2})
 */
 std::vector<Intersection> intersections(std::initializer_list<Intersection> items);  
 
 const Intersection* find_hit(const std::vector<Intersection>& list); 
-
+bool operator==(Intersection const& obj1,Intersection const& obj2); 
 bool comp_intersection(Intersection a, Intersection b); 
 
 #endif

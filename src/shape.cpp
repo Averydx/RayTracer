@@ -40,3 +40,13 @@ Vector Shape::normal_at(const Point& world_point) const
 
     return world_normal.normalize(); 
 }
+
+int scan_container(const std::vector<const Shape*>& container,const Shape* desired)
+{
+    for(int i = 0; i < container.size();i++)
+    {
+        if(container[i] == desired)
+            return i; 
+    }
+    return -1; 
+}

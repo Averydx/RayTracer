@@ -216,4 +216,14 @@ TEST_CASE("Ray plane intersections","[plane][shape]")
 
 }
 
+TEST_CASE("A helper for producing a glass sphere","[shapes]")
+{
+    Sphere* s = glass_sphere(); 
+    Matrix I(4,4); 
+    I.setIdentity(); 
+    REQUIRE(s->transform == I); 
+    REQUIRE(equal_double(s->mat.transparency,1));  
+    REQUIRE(equal_double(s->mat.refractive_index,1.5));  
+}
+
 
