@@ -26,7 +26,6 @@ class Shape
         void setMaterial(const Material& m); 
         Material getMaterial() const; 
 
-    // private:
         Matrix transform;  
         Material mat;
 }; 

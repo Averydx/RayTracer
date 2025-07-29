@@ -24,6 +24,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 file(GLOB_RECURSE SOURCE_FILES "src/*.cpp")
 add_library(raytracer_core STATIC ${SOURCE_FILES})
 target_include_directories(raytracer_core PUBLIC ${PROJECT_SOURCE_DIR}/include)
+target_link_libraries(raytracer_core PRIVATE OpenMP::OpenMP_CXX)
 
 # # Exclude Catch2 tests or external libraries
 # list(FILTER SOURCE_FILES EXCLUDE REGEX ".*Catch2/.*")

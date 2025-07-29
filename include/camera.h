@@ -11,8 +11,8 @@
 class Camera
 {
     public: 
-        double hsize; 
-        double vsize; 
+        int hsize; 
+        int vsize; 
 
         double field_of_view; 
         Matrix transform; 
@@ -23,12 +23,12 @@ class Camera
         double pixel_size; 
 
         //constructors
-        Camera(double _hsize, double _vsize, double _fov):hsize(_hsize),vsize(_vsize),field_of_view(_fov),transform(Matrix(4,4)) 
+        Camera(int _hsize, int _vsize, double _fov):hsize(_hsize),vsize(_vsize),field_of_view(_fov),transform(Matrix(4,4)) 
         {
             this->transform.setIdentity();
             
             double half_view = tan(this->field_of_view /2.f); 
-            double aspect = this->hsize / this->vsize; 
+            double aspect = (double)this->hsize / (double)this->vsize; 
 
             if(aspect >= 1)
             {

@@ -13,63 +13,51 @@
 #include <vector> 
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include <random>
 
 
 int main(int argc, char *argv[])
 {
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> distrib(0, 1);
+
     Plane* floor = new Plane(); 
     floor->mat.pattern = new CheckerPattern(Color(1.f,1.f,1.f),Color(0.f,0.f,0.f));
-    floor->mat.reflective = 0.5f;  
+    floor->mat.pattern->transform = scaling(0.33,0.33,0.33); 
 
     Plane* wall1 = new Plane(); 
-    wall1->mat.mat_color = Color(0.5,0.5,0.5); 
-    wall1->mat.reflective = 1.f;
-    wall1->mat.transparency = 0.0;  
-    wall1->setTransform(translation(0,0,2.5)*rotation_x(M_PI/2.f)); 
+    wall1->mat.mat_color = Color(0.768,0.768,0.768); 
+    wall1->mat.reflective = 1.0; 
+    wall1->setTransform(translation(0,0,10)*rotation_x(M_PI/2.f)); 
 
-    Sphere* middle = new Sphere();
-    middle->transform = translation(0,0.0,-0.5);   
-    middle->mat = Material(); 
-    middle->mat.mat_color = Color(0.5,0.5,0.5); 
-    middle->mat.diffuse = 0.7; 
-    middle->mat.specular = 0.3; 
-    middle->mat.reflective = 0.5f; 
-    middle->mat.refractive_index = 1.5; 
-    middle->mat.transparency = 0.3; 
-
-    Sphere* right = new Sphere(); 
-    right->transform = translation(1.5,0.5,-0.5) * scaling(0.5,0.5,0.5); 
-    right->mat = Material(); 
-    right->mat.pattern = new GradientPattern(Color(1.f,0.f,1.f),Color(0.f,0.5f,0.f)); 
-    right->mat.pattern->transform = scaling(0.3,0.3,0.3); 
-    right->mat.diffuse = 0.7; 
-    right->mat.specular = 0.3; 
-    right->mat.reflective = 0.5f; 
-    right->mat.refractive_index = 1.5; 
-    right->mat.transparency = 0.3; 
-
-    Sphere* left = new Sphere(); 
-    left->transform = translation(-1.5,0.33,-0.75) * scaling(0.33,0.33,0.33); 
-    left->mat = Material(); 
-    left->mat.diffuse = 0.7; 
-    left->mat.mat_color = Color(1,0.8,0.1); 
-    left->mat.specular = 0.3; 
-    left->mat.reflective = 1.0f; 
-    left->mat.refractive_index = 1.5; 
-    left->mat.transparency = 0.6; 
+    // Cube* cube = new Cube; 
+    // cube->transform = translation(-3,1,0); 
+    // cube->mat.reflective = 0.3; 
+    // cube->mat.refractive_index = 1.2; 
+    // cube->mat.transparency = 0.2; 
+    // cube->mat.mat_color = Color(0.3,0.1,0.8); 
 
     World w; 
-    w.world_light.position = Point(10,10,-10); 
+    w.world_light.position = Point(20,20,-20); 
     w.empty_objects(); 
 
-    w.world_objects.push_back(wall1); 
-    w.world_objects.push_back(floor); 
-    w.world_objects.push_back(left); 
-    w.world_objects.push_back(middle); 
-    w.world_objects.push_back(right); 
+    std::vector<Point> positions = {Point(0,1,0),Point(-2,1,2),Point(2,1,3),Point(0,1,4),Point(-5,1,4),Point(5,1,4),Point(1,1,-2),Point(1,1,2),Point(-3,1,0)}; 
+    for(int i = 0; i < positions.size(); i++)
+    {
+        Sphere* ball = glass_sphere(); 
+        ball->transform = translation(positions[i].x,positions[i].y,positions[i].z); 
+        ball->mat.mat_color = Color(distrib(gen),distrib(gen),distrib(gen)); 
+        w.world_objects.push_back(ball); 
+    }
 
-    Camera cam(600,400,M_PI/3.f);
-    cam.transform = view_transform(Point(0,1.5,-5),Point(0,1,0),Vector(0,1,0));  
+    w.world_objects.push_back(wall1); 
+    w.world_objects.push_back(floor);  
+    //w.world_objects.push_back(cube); 
+
+    Camera cam(1920,1080,M_PI/3.f);
+    cam.transform = view_transform(Point(0,3,-6),Point(0,1,0),Vector(0,1,0));  
 
     Canvas image = render(cam,w); 
 

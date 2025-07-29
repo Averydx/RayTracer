@@ -43,3 +43,8 @@ Color CheckerPattern::color_at(const Point& p) const
     
     return this->cb; 
 }
+
+Color TestPattern::color_at(const Point& p) const 
+{
+    return Color(p.x,p.y,p.z); 
+}

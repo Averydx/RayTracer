@@ -40,8 +40,8 @@ Color lighting(const Material& mat, const Shape* shape, const pointLight& light,
 
     double light_dot_normal = light_vec * normal_vec; 
 
-    Color diffuse(0.f,0.f,0.f); 
-    Color specular(0.f,0.f,0.f); 
+    Color diffuse(0.0,0.0,0.0); 
+    Color specular(0.0,0.0,0.0); 
     if(light_dot_normal > 0)
     {
         //Compute the diffuse contribution
@@ -64,6 +64,13 @@ Color lighting(const Material& mat, const Shape* shape, const pointLight& light,
         specular = light.intensity * mat.specular * factor; 
     }
 
-    return ambient + diffuse + specular; 
+    //Compute the attenuation factor 
+    double d = light_vec.magnitude(); 
+    double k_c = 1; 
+    double k_i = 0.22; 
+    double k_q = 0.2; 
+    double F_att = 1/(k_c + k_i*d + k_q * d * d); 
+
+    return (ambient + diffuse + specular) * F_att; 
 
 }

@@ -126,8 +126,8 @@ TEST_CASE("Point colors", "[world]")
 
 TEST_CASE("Constructing a camera","[camera]")
 {
-    double hsize = 160; 
-    double vsize = 120; 
+    int hsize = 160; 
+    int vsize = 120; 
     double field_of_view = M_PI/2.f; 
     
     Camera c(hsize,vsize,field_of_view); 

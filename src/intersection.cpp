@@ -30,7 +30,7 @@ const Intersection* find_hit(const std::vector<Intersection>& list)
     const Intersection* hit = nullptr; 
     for(const Intersection& I : list)
     {
-        if(I.t > 0)
+        if(I.t > 0.0)
         {
             if(hit == nullptr)
             {
@@ -96,8 +96,8 @@ Computations::Computations(const Intersection& I, const Ray& r, const std::vecto
     }
 
     //Make sure to do this after checking whether the normal vector needs to be negated. 
-    this->over_point = this->point + this->normalv * EPSILON; 
-    this->under_point = this->point + (-1* this->normalv * EPSILON); 
+    this->over_point = this->point + this->normalv * BUMP_EPSILON; 
+    this->under_point = this->point + (-1* this->normalv * BUMP_EPSILON); 
 
     this->reflectv = r.direction.reflect_vector(this->normalv); 
 }

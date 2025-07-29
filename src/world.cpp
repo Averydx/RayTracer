@@ -1,6 +1,7 @@
 #include "world.h"
 #include "transformations.h"
 #include "lights.h"
+#include "tools.h"
 
 #include <algorithm>
 
@@ -39,11 +40,23 @@ std::vector<Intersection> World::intersect(const Ray& ray) const
 Color World::shade_hit(const Computations& comps,int remaining) const
 {
     bool in_shadow = this->is_shadowed(comps.over_point); 
+
     Color surface =  lighting(comps.s->mat,comps.s,this->world_light,comps.over_point,comps.eyev,comps.normalv,in_shadow);
-    Color reflected = this->reflected_color(comps,remaining); 
-    Color refracted = this->refracted_color(comps,remaining); 
-    
-    return surface + reflected + refracted; 
+
+    Color reflected = Color(0,0,0); 
+    if(comps.s->mat.reflective > 0.0)
+        reflected = this->reflected_color(comps,remaining); 
+
+    Color refracted = Color(0,0,0); 
+    if(comps.s->mat.transparency > 0.0)
+        refracted = this->refracted_color(comps,remaining); 
+
+    if(comps.s->mat.reflective > 0.0 && comps.s->mat.transparency > 0.0)
+    {
+        double reflectance = this->schlick(comps); 
+        return surface + reflected * reflectance + refracted * (1.0 - reflectance); 
+    }
+        return surface + reflected + refracted;    
 }
 
 Color World::color_at(const Ray& ray,int remaining) const
@@ -52,7 +65,7 @@ Color World::color_at(const Ray& ray,int remaining) const
     const Intersection* hit = find_hit(_ints); 
 
     if(hit == nullptr)
-        return Color(0.f,0.f,0.f); 
+        return Color(0.0,0.0,0.0); 
 
     Computations comps(*hit,ray,_ints);
     
@@ -77,10 +90,7 @@ bool World::is_shadowed(const Point& point) const
 Color World::reflected_color(const Computations& comps,int remaining) const
 {
     if(remaining <= 1)
-        return Color(0.f,0.f,0.f); 
-
-    if(comps.s->mat.reflective == 0.f)
-        return Color(0.f,0.f,0.f); 
+        return Color(0.0,0.0,0.0); 
 
     Ray reflect_ray(comps.over_point,comps.reflectv); 
     Color color = this->color_at(reflect_ray,remaining-1); 
@@ -102,24 +112,24 @@ Color World::refracted_color(const Computations& comps,int remaining) const
     if(remaining == 0)
         return Color(0,0,0); 
 
-    if(comps.s->mat.transparency == 0.f)
-        return Color(0,0,0); 
-
     //Find the ratio of first index of refraction to the second
-    double ratio = comps.n1 / comps.n2; 
+    double n_ratio = comps.n1 / comps.n2; 
+
+    //cos(theta_i) is the dot product of the two vectors
     double cos_i = comps.eyev * comps.normalv; 
 
     //Trig identity
-    double sin2_t = (ratio * ratio) * (1-(cos_i * cos_i));
+    double sin2_t = pow(n_ratio,2) * (1-pow(cos_i,2));
 
     //total internal reflection 
-    if(sin2_t > 1)
+    if(sin2_t > 1.0)
         return Color(0,0,0); 
 
-    double cost_t = sqrt(1 - sin2_t); 
+    double cos_t = sqrt(1 - sin2_t); 
 
     //direction of refracted ray
-    Vector direction = comps.normalv * (ratio * cos_i - cost_t) - comps.eyev * ratio; 
+    //Vector direction = comps.normalv * (n_ratio * cos_i - cos_t) - comps.eyev * n_ratio; 
+    Vector direction =  (n_ratio * cos_i - cos_t) * comps.normalv - n_ratio * comps.eyev; 
     Ray refract_ray(comps.under_point,direction); 
 
     Color color = this->color_at(refract_ray,remaining-1) * comps.s->mat.transparency; 
@@ -129,16 +139,23 @@ Color World::refracted_color(const Computations& comps,int remaining) const
 
 double World::schlick(const Computations& comps) const
 {
-    double _cos = comps.eyev * comps.normalv; 
+    double _cos = comps.eyev * comps.normalv;
 
     //total internal reflection occurs if n1 > n2
     if(comps.n1 > comps.n2)
     {
         double n = comps.n1 / comps.n2; 
-        double sin2_t = n*n * (1.f - _cos*_cos); 
+        double sin2_t = n*n * (1.0 - _cos*_cos); 
         if(sin2_t > 1)
             return 1.0; 
+
+        //compute cosine of theta_t using trig identity
+        double cos_t = sqrt(1 - sin2_t); 
+
+        //when n1 > n2 use cos(theta_t) instead
+        _cos = cos_t; 
     }
 
-    return 0.0; 
+    double r0 = pow(((comps.n1 - comps.n2)/(comps.n1 + comps.n2)),2); 
+    return r0 + (1-r0) * pow(1-_cos,5);  
 }

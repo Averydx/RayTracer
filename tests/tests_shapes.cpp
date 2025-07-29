@@ -216,7 +216,7 @@ TEST_CASE("Ray plane intersections","[plane][shape]")
 
 }
 
-TEST_CASE("A helper for producing a glass sphere","[shapes]")
+TEST_CASE("A helper for producing a glass sphere","[shapes][sphere]")
 {
     Sphere* s = glass_sphere(); 
     Matrix I(4,4); 
@@ -224,6 +224,80 @@ TEST_CASE("A helper for producing a glass sphere","[shapes]")
     REQUIRE(s->transform == I); 
     REQUIRE(equal_double(s->mat.transparency,1));  
     REQUIRE(equal_double(s->mat.refractive_index,1.5));  
+}
+
+TEST_CASE("A ray intersects a cube","[shapes][cube]")
+{
+    Cube c;
+    std::vector<std::pair<double,double>> ts = {
+    std::pair<double, double>{4, 6},
+    std::pair<double, double>{4, 6},
+    std::pair<double, double>{4, 6},
+    std::pair<double, double>{4, 6},
+    std::pair<double, double>{4, 6},
+    std::pair<double, double>{4, 6},
+    std::pair<double, double>{-1, 1},
+                            }; 
+
+    std::vector<std::pair<Point,Vector>> rays = {
+    std::pair<Point, Vector>{Point(5,0.5,0), Vector(-1,0,0)},
+    std::pair<Point, Vector>{Point(-5,0.5,0), Vector(1,0,0)},
+    std::pair<Point, Vector>{Point(0.5,5,0), Vector(0,-1,0)},
+    std::pair<Point, Vector>{Point(0.5,-5,0), Vector(0,1,0)},
+    std::pair<Point, Vector>{Point(0.5,0,5), Vector(0,0,-1)},
+    std::pair<Point, Vector>{Point(0.5,0,-5), Vector(0,0,1)},
+    std::pair<Point, Vector>{Point(0,0.5,0), Vector(0,0,1)},
+    }; 
+
+    for(int i = 0; i < ts.size(); i++)
+    {
+        Ray r(rays[i].first,rays[i].second); 
+        std::vector<Intersection> xs = c.local_intersect(r); 
+        REQUIRE(xs.size() == 2); 
+        REQUIRE(xs[0].t == ts[i].first); 
+        REQUIRE(xs[1].t == ts[i].second); 
+    }
+}
+
+TEST_CASE("A ray misses a cube","[shapes][cube]")
+{
+    Cube c;
+    std::vector<std::pair<Point,Vector>> rays = {
+    std::pair<Point, Vector>{Point(-2,0,0), Vector(0.2673,0.5345,0.8018)},
+    std::pair<Point, Vector>{Point(0,-2,0), Vector(0.8018,0.2673,0.5345)},
+    std::pair<Point, Vector>{Point(0.,0,-2), Vector(0.5345,0.8018,0.2673)},
+    std::pair<Point, Vector>{Point(2,0,2), Vector(0,0,-1)},
+    std::pair<Point, Vector>{Point(0,2,2), Vector(0,-1,0)},
+    std::pair<Point, Vector>{Point(2,2,0), Vector(-1,0,0)}
+    }; 
+
+    for(int i = 0; i < rays.size(); i++)
+    {
+        Ray r(rays[i].first,rays[i].second); 
+        std::vector<Intersection> xs = c.local_intersect(r); 
+        REQUIRE(xs.size() == 0); 
+    }
+}
+
+TEST_CASE("The normal on the surface of a cube","[shapes][cube]")
+{
+    Cube c; 
+    std::vector<std::pair<Point,Vector>> p_norms = {
+    std::pair<Point, Vector>{Point(1,0.5,-0.8), Vector(1,0,0.0)},
+    std::pair<Point, Vector>{Point(-1,-0.2,0.9), Vector(-1,0,0)},
+    std::pair<Point, Vector>{Point(-0.4,1,-0.1), Vector(0,1,0)},
+    std::pair<Point, Vector>{Point(0.3,-1,-0.7), Vector(0,-1,0)},
+    std::pair<Point, Vector>{Point(-0.6,0.3,1), Vector(0,0,1)},
+    std::pair<Point, Vector>{Point(0.4,0.4,-1), Vector(0,0,-1)},
+    std::pair<Point, Vector>{Point(1,1,1), Vector(1,0,0)},
+    std::pair<Point, Vector>{Point(-1,-1,-1), Vector(-1,0,0)}
+    }; 
+
+    for(int i = 0; i < p_norms.size();i++)
+    {
+        Vector normal = c.local_normal_at(p_norms[i].first); 
+        REQUIRE(normal == p_norms[i].second); 
+    }
 }
 
 

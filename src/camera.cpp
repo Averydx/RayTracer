@@ -24,11 +24,12 @@ Ray Camera::ray_for_pixel(double px, double py) const
     return Ray(origin, direction); 
 } 
 
-#pragma omp parallel for
+
 Canvas render(const Camera& c, const World& w)
 {
     Canvas image(c.hsize,c.vsize); 
 
+    #pragma omp parallel for
     for(int y = 0; y < c.vsize;y++)
     {
         for(int x = 0; x < c.hsize; x++)

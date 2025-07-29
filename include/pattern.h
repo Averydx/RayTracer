@@ -48,4 +48,11 @@ class CheckerPattern: public Pattern
     Color color_at(const Point& p) const; 
 }; 
 
+class TestPattern: public Pattern
+{
+    public: 
+    TestPattern():Pattern(Color(1,1,1),Color(0,0,0)) {}
+    Color color_at(const Point& p) const; 
+}; 
+
 #endif

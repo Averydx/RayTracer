@@ -2,6 +2,7 @@
 #include "tools.h"
 
 #include <math.h>
+#include <algorithm> 
 
 std::vector<Intersection> Sphere::local_intersect(const Ray& r) const
 {
@@ -49,11 +50,61 @@ std::vector<Intersection> Plane::local_intersect(const Ray& r) const
     return intersection_list; 
 }
 
+Vector Cube::local_normal_at(const Point& object_point) const
+{
+    double maxc = std::max(std::max(abs(object_point.x),abs(object_point.y)),abs(object_point.z)); 
+    if(maxc == abs(object_point.x))
+        return Vector(object_point.x,0,0); 
+    else if(maxc == abs(object_point.y))
+        return Vector(0,object_point.y,0); 
+    
+    return Vector(0,0,object_point.z); 
+}
+
+std::array<double,2> Cube::check_axis(double origin, double direction) const
+{
+    double tmin_numerator = (-1 - origin); 
+    double tmax_numerator = (1 - origin); 
+
+    double tmin = tmin_numerator / direction; 
+    double tmax = tmax_numerator / direction; 
+
+    if(tmin > tmax)
+    {
+        std::swap(tmin,tmax); 
+    }
+    std::array<double,2> arr = {tmin,tmax}; 
+    return arr; 
+}
+
+std::vector<Intersection> Cube::local_intersect(const Ray& r) const
+{
+    std::vector<Intersection> intersection_list; 
+    auto [xtmin,xtmax] = check_axis(r.origin.x,r.direction.x); 
+    auto [ytmin,ytmax] = check_axis(r.origin.y,r.direction.y); 
+    auto [ztmin,ztmax] = check_axis(r.origin.z,r.direction.z); 
+
+    double tmin = std::max(std::max(xtmin,ytmin),ztmin); 
+    double tmax = std::min(std::min(xtmax,ytmax),ztmax); 
+
+    if(tmin > tmax)
+        return intersection_list; 
+
+    intersection_list.push_back(Intersection(tmin,this)); 
+    intersection_list.push_back(Intersection(tmax,this)); 
+
+    return intersection_list; 
+    
+}
+
 Sphere* glass_sphere()
 {
     Sphere* s = new Sphere(); 
     s->mat.transparency = 1.0f; 
+    s->mat.reflective = 1.0f; 
     s->mat.refractive_index = 1.5; 
+    s->mat.specular = 1; 
+    s->mat.shininess = 300; 
     return s; 
 }
 

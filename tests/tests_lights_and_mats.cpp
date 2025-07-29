@@ -296,7 +296,7 @@ TEST_CASE("The hit should offset the point","[lighting]")
 
     Computations comps(I,r); 
 
-    REQUIRE(comps.over_point.z < - EPSILON/2.f); 
+    REQUIRE(comps.over_point.z < - BUMP_EPSILON/2.f); 
     REQUIRE(comps.point.z > comps.over_point.z);
 }
 
@@ -369,6 +369,28 @@ TEST_CASE("shade_hit() with a reflective material","[lighting]")
 //     Color c = w->color_at(r); 
 // }
 
+TEST_CASE("The refracted color with a refracted ray","[refraction]")
+{
+    World w; 
+    w.world_objects[0]->mat.ambient = 1.0; 
+    w.world_objects[0]->mat.pattern = new TestPattern(); 
+
+    w.world_objects[1]->mat.transparency = 1.0; 
+    w.world_objects[1]->mat.refractive_index = 1.5; 
+
+    Ray r(Point(0,0,0.1),Vector(0,1,0)); 
+    std::vector<Intersection> xs = intersections({
+        Intersection(-0.9899,w.world_objects[0]),
+        Intersection(-0.4899,w.world_objects[1]),
+        Intersection(0.4899,w.world_objects[1]),
+        Intersection(0.9899,w.world_objects[0])
+    }); 
+
+    Computations comps(xs[2],r,xs); 
+    Color c = w.refracted_color(comps,5); 
+    REQUIRE(c == Color(0,0.99888,0.04725)); 
+}
+
 TEST_CASE("The reflected color at the maximum recursive depth","[lighting]")
 {
     World w; 
@@ -432,7 +454,7 @@ TEST_CASE("The under point is offset below the surface","[refraction]")
     std::vector<Intersection> xs = intersections({I}); 
 
     Computations comps(I,r,xs); 
-    REQUIRE(comps.under_point.z > EPSILON / 2); 
+    REQUIRE(comps.under_point.z > BUMP_EPSILON / 2); 
 }
 
 TEST_CASE("The refracted color with an opaque surface","[refraction]")
@@ -471,7 +493,35 @@ TEST_CASE("The refracted color under total internal reflection","[refraction]")
 
 TEST_CASE("The schlick approximation under total internal reflection","[refraction]")
 {
-    
+    World w; 
+    Shape* shape = glass_sphere(); 
+    Ray r(Point(0,0,sqrt(2)/2.f),Vector(0,1,0)); 
+    std::vector<Intersection> xs = intersections({Intersection(-sqrt(2)/2.f,shape),Intersection(sqrt(2)/2.f,shape)}); 
+    Computations comps(xs[1],r,xs); 
+    double reflectance = w.schlick(comps); 
+    REQUIRE(equal_double(reflectance,1.f)); 
+}
+
+TEST_CASE("The schlick approximation with a perpendicular viewing angle","[refraction]")
+{
+    World w; 
+    Shape* shape = glass_sphere(); 
+    Ray r(Point(0,0,0),Vector(0,1,0)); 
+    std::vector<Intersection> xs = intersections({Intersection(-1,shape),Intersection(1,shape)}); 
+    Computations comps(xs[1],r,xs); 
+    double reflectance = w.schlick(comps); 
+    REQUIRE(equal_double(reflectance,0.04f)); 
+}
+
+TEST_CASE("The schlick approximation with small angle and n2 > n1","[refraction]")
+{
+    World w; 
+    Shape* shape = glass_sphere(); 
+    Ray r(Point(0,0.99,-2),Vector(0,0,1)); 
+    std::vector<Intersection> xs = intersections({Intersection(1.8589,shape)}); 
+    Computations comps(xs[0],r,xs); 
+    double reflectance = w.schlick(comps); 
+    REQUIRE(equal_double(reflectance,0.48873f)); 
 }
 
 TEST_CASE("shade_hit() with a transparent material","[material][refraction]")
@@ -498,5 +548,32 @@ TEST_CASE("shade_hit() with a transparent material","[material][refraction]")
     Color color = w.shade_hit(comps,5); 
 
     REQUIRE(color == Color(0.93642,0.68642,0.68642)); 
+}
+
+TEST_CASE("shade_hit() with a reflective, transparent material","[refraction]")
+{
+    World w; 
+    w.empty_objects(); 
+    Ray r(Point(0,0,-3),Vector(0,-sqrt(2)/2.0,sqrt(2)/2.0)); 
+    Plane* floor = new Plane(); 
+    floor->transform = translation(0,-1,0); 
+    floor->mat.reflective = 0.5; 
+    floor->mat.transparency = 0.5; 
+    floor->mat.refractive_index = 1.5; 
+    w.world_objects.push_back(floor); 
+
+    Sphere* ball = new Sphere(); 
+    ball->mat.mat_color = Color(1,0,0); 
+    ball->mat.ambient = 0.5; 
+    ball->transform = translation(0,-3.5,-0.5); 
+    w.world_objects.push_back(ball); 
+    std::vector<Intersection> xs = intersections({Intersection(sqrt(2),floor)}); 
+    Computations comps(xs[0],r,xs); 
+    Color color = w.shade_hit(comps,5); 
+
+    // Color difference = Color(0.93391,0.69643,0.69243) - color; 
+    // difference.printColor(); 
+    // color.printColor(); 
+    REQUIRE(color == Color(0.93391,0.69643,0.69243)); 
 }
 
