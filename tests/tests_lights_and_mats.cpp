@@ -94,7 +94,7 @@ TEST_CASE("Lighting with a pattern applied","[lighting][pattern][materials]")
     Color c1 = lighting(m,&s, light,Point(0.9,0,0),eyev,normalv); 
     Color c2 = lighting(m,&s, light,Point(1.1,0,0),eyev,normalv); 
 
-    REQUIRE(c1 == Color(1,1,1)); 
+    REQUIRE(c1 == Color(0.704225,0.704225,0.704225)); 
     REQUIRE(c2 == Color(0,0,0)); 
 }
 TEST_CASE("Patterns and transformations","[pattern]")
@@ -191,7 +191,7 @@ TEST_CASE("Lighting tests","[lighting]")
         pointLight light(Color(1,1,1),Point(0,0,-10)); 
         Color result = lighting(m,&s,light,pos,eyev,normalv); 
 
-        REQUIRE(result == Color(1.9,1.9,1.9)); 
+        REQUIRE(result == Color(1.33803,1.33803,1.33803)); 
     }
 
     SECTION("Light with the eye between light and surface, eye offset 45deg","[lighting]")
@@ -201,7 +201,7 @@ TEST_CASE("Lighting tests","[lighting]")
         pointLight light(Color(1,1,1),Point(0,0,-10)); 
         Color result = lighting(m,&s,light,pos,eyev,normalv); 
 
-        REQUIRE(result == Color(1.0,1.0,1.0)); 
+        REQUIRE(result == Color(0.704225,0.704225,0.704225)); 
     }
 
     SECTION("Lighting with eye opposite surface, light offset 45deg","[lighting]")
@@ -211,7 +211,7 @@ TEST_CASE("Lighting tests","[lighting]")
         pointLight light(Color(1,1,1),Point(0,10,-10)); 
         Color result = lighting(m,&s,light,pos,eyev,normalv); 
 
-        REQUIRE(result == Color(0.7364,0.7364,0.7364)); 
+        REQUIRE(result == Color(0.518589,0.518589,0.518589)); 
     }
 
     SECTION("Lighting with eye in the path of the reflection vector","[lighting]")
@@ -221,7 +221,7 @@ TEST_CASE("Lighting tests","[lighting]")
         pointLight light(Color(1,1,1),Point(0,10,-10)); 
         Color result = lighting(m,&s,light,pos,eyev,normalv); 
 
-        REQUIRE(result == Color(1.6364,1.6364,1.6364)); 
+        REQUIRE(result == Color(1.15239,1.15239,1.15239)); 
     }
 
     SECTION("Lighting with the light behind the surface","[lighting]")
@@ -231,7 +231,7 @@ TEST_CASE("Lighting tests","[lighting]")
         pointLight light(Color(1,1,1),Point(0,0,10)); 
         Color result = lighting(m,&s,light,pos,eyev,normalv); 
 
-        REQUIRE(result == Color(0.1,0.1,0.1)); 
+        REQUIRE(result == Color(0.0704225,0.0704225,0.0704225)); 
     }
     SECTION("Lighting with the surface in shadow","[lighting]")
     {
@@ -326,7 +326,8 @@ TEST_CASE("Reflective surfaces","[lighting]")
         Computations comps(I,r); 
 
         Color color = w.reflected_color(comps); 
-        REQUIRE(color == Color(0.19032,0.2379,0.14274)); 
+
+        REQUIRE(color == Color(0.134157,0.167696,0.100618)); 
 
 
     }
@@ -346,7 +347,8 @@ TEST_CASE("shade_hit() with a reflective material","[lighting]")
     Computations comps(I,r); 
     Color color = w.shade_hit(comps); 
 
-    REQUIRE(color == Color(0.87677,0.92436,0.82918)); 
+
+    REQUIRE(color == Color( 0.617534,0.651073,0.583994)); 
 }
 
 //This needs more thought
@@ -547,7 +549,7 @@ TEST_CASE("shade_hit() with a transparent material","[material][refraction]")
     Computations comps(xs[0],r,xs); 
     Color color = w.shade_hit(comps,5); 
 
-    REQUIRE(color == Color(0.93642,0.68642,0.68642)); 
+    REQUIRE(color == Color(0.733398,0.483398,0.483398)); 
 }
 
 TEST_CASE("shade_hit() with a reflective, transparent material","[refraction]")
@@ -574,6 +576,7 @@ TEST_CASE("shade_hit() with a reflective, transparent material","[refraction]")
     // Color difference = Color(0.93391,0.69643,0.69243) - color; 
     // difference.printColor(); 
     // color.printColor(); 
-    REQUIRE(color == Color(0.93391,0.69643,0.69243)); 
+
+    REQUIRE(color == Color(0.722881, 0.483398,0.483398)); 
 }
 

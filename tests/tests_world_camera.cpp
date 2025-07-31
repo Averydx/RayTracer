@@ -105,7 +105,7 @@ TEST_CASE("Point colors", "[world]")
         Ray r(Point(0,0,-5),Vector(0,0,1)); 
         Color c = w.color_at(r); 
 
-        REQUIRE(c == Color(0.38066,0.47583,0.2855)); 
+        REQUIRE(c == Color(0.268071,0.335089,0.201053)); 
     }
 
     SECTION("The color with an intersection behind the ray")

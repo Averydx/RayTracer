@@ -49,6 +49,32 @@ class Cube : public Shape
     std::array<double,2> check_axis(double origin, double direction) const; 
 }; 
 
+enum class CYL_TYPE
+{
+    OPEN,
+    CLOSED
+}; 
+
+class Cylinder: public Shape
+{
+    public: 
+    //Constructors
+    Cylinder():Shape(){}
+    Cylinder(double _minimum,double _maximum):Shape(),minimum(_minimum),maximum(_maximum){}
+    Cylinder(double _minimum,double _maximum,CYL_TYPE _type):Shape(),minimum(_minimum),maximum(_maximum),type(_type){}
+    
+    //methods
+    Vector local_normal_at(const Point& object_point) const override; 
+    bool check_cap(const Ray& r, double t) const; 
+    std::vector<Intersection> local_intersect(const Ray& r) const override; 
+    void intersect_caps(const Ray& r, std::vector<Intersection>& xs) const; 
+
+    //fields 
+    double maximum = std::numeric_limits<double>::infinity(); 
+    double minimum = -std::numeric_limits<double>::infinity(); 
+    CYL_TYPE type = CYL_TYPE::OPEN; 
+}; 
+
 Sphere* glass_sphere(); 
 
 #endif

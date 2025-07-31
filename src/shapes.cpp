@@ -97,6 +97,80 @@ std::vector<Intersection> Cube::local_intersect(const Ray& r) const
     
 }
 
+std::vector<Intersection> Cylinder::local_intersect(const Ray& r) const
+{
+    std::vector<Intersection> intersection_list; 
+    double a = r.direction.x*r.direction.x + r.direction.z * r.direction.z;
+    if(a < EPSILON)
+    {
+        this->intersect_caps(r,intersection_list); 
+        return intersection_list; 
+    }
+
+    double b = 2 * r.origin.x * r.direction.x + 2*r.origin.z * r.direction.z; 
+    double c = r.origin.x * r.origin.x + r.origin.z * r.origin.z - 1; 
+
+    double disc = b*b - 4 * a * c; 
+
+    if(disc < 0.0)
+        return intersection_list; 
+
+    double t0 = (-b - sqrt(disc))/(2.0 * a); 
+    double t1 = (-b + sqrt(disc))/(2.0 * a); 
+
+    if(t0 > t1)
+        std::swap(t0,t1); 
+
+    double y0 = r.origin.y + t0 * r.direction.y; 
+
+    if(this->minimum < y0 && y0 < this->maximum)
+        intersection_list.push_back(Intersection(t0,this)); 
+
+    double y1 = r.origin.y + t1 * r.direction.y; 
+                  
+    if(this->minimum < y1 && y1 < this->maximum)
+        intersection_list.push_back(Intersection(t1,this)); 
+
+    this->intersect_caps(r,intersection_list); 
+
+    return intersection_list; 
+}
+
+Vector Cylinder::local_normal_at(const Point& object_point) const
+{
+    double dist = object_point.x * object_point.x + object_point.z * object_point.z; 
+    if(dist < 1 && (object_point.y >= this->maximum - EPSILON))
+        return Vector(0,1,0); 
+
+    if(dist < 1 && (object_point.y <= this->minimum + EPSILON))
+        return Vector(0,-1,0); 
+
+    return Vector(object_point.x,0,object_point.z); 
+}
+
+bool Cylinder::check_cap(const Ray& r, double t) const
+{
+    double x = r.origin.x + t * r.direction.x; 
+    double z = r.origin.z + t * r.direction.z; 
+
+    return (x*x + z*z) <= 1; 
+}
+
+void Cylinder::intersect_caps(const Ray& r, std::vector<Intersection>& xs) const
+{
+    //Return if the cylinder is not closed or can't be intersected by the ray
+    if(this->type != CYL_TYPE::CLOSED || std::abs(r.direction.y) < EPSILON)
+        return; 
+
+    double t = (this->minimum - r.origin.y) / r.direction.y; 
+    if(check_cap(r,t))
+        xs.push_back(Intersection(t,this)); 
+
+    t = (this->maximum - r.origin.y) / r.direction.y; 
+    if(check_cap(r,t))
+        xs.push_back(Intersection(t,this)); 
+}
+
 Sphere* glass_sphere()
 {
     Sphere* s = new Sphere(); 

@@ -300,4 +300,138 @@ TEST_CASE("The normal on the surface of a cube","[shapes][cube]")
     }
 }
 
+TEST_CASE("A ray misses a cylinder","[shapes][cylinder]")
+{
+    Cylinder cyl; 
+    std::vector<std::pair<Point,Vector>> pvs = {
+    std::pair<Point, Vector>{Point(1,0,0), Vector(0,1,0)},
+    std::pair<Point, Vector>{Point(0,0,0), Vector(0,1,0)},
+    std::pair<Point, Vector>{Point(0,0,-5), Vector(1,1,1)}}; 
 
+
+    for(int i = 0; i < pvs.size(); i++)
+    {
+        Vector direction = pvs[i].second.normalize(); 
+        Ray r(pvs[i].first,direction); 
+        std::vector<Intersection> xs = cyl.local_intersect(r); 
+        REQUIRE(xs.size() == 0); 
+    }
+}
+
+TEST_CASE("A ray strikes a cylinder","[shapes][cylinder]")
+{
+    Cylinder cyl; 
+    std::vector<std::pair<Point,Vector>> pvs = {
+    std::pair<Point, Vector>{Point(1,0,-5), Vector(0,0,1)},
+    std::pair<Point, Vector>{Point(0,0,-5), Vector(0,0,1)},
+    std::pair<Point, Vector>{Point(0.5,0,-5), Vector(0.1,1,1)}}; 
+
+    std::vector<std::pair<double,double>> ts = {
+    std::pair<double, double>{5, 5},
+    std::pair<double, double>{4, 6},
+    std::pair<double, double>{6.80798, 7.08872},
+                            }; 
+
+    for(int i = 0; i < pvs.size(); i++)
+    {
+        Vector direction = pvs[i].second.normalize(); 
+        Ray r(pvs[i].first,direction); 
+        std::vector<Intersection> xs = cyl.local_intersect(r); 
+        REQUIRE(xs.size() == 2);
+        REQUIRE(equal_double(xs[0].t,ts[i].first)); 
+        REQUIRE(equal_double(xs[1].t,ts[i].second)); 
+    }
+}
+
+TEST_CASE("Normal vector on a cylinder","[shapes][cylinder]")
+{
+    Cylinder cyl; 
+    std::vector<std::pair<Point,Vector>> pvs = {
+    std::pair<Point, Vector>{Point(1,0,0), Vector(1,0,0)},
+    std::pair<Point, Vector>{Point(0,5,-1), Vector(0,0,-1)},
+    std::pair<Point, Vector>{Point(0,-2,1), Vector(0,0,1)},
+    std::pair<Point, Vector>{Point(-1,1,0), Vector(-1,0,0)}
+}; 
+
+    for(int i = 0; i < pvs.size(); i++)
+    {
+        REQUIRE(cyl.local_normal_at(pvs[i].first) == pvs[i].second); 
+    }
+}
+
+TEST_CASE("Intersecting a constrained cylinder","[shapes][cylinder]")
+{
+    Cylinder cyl(1,2); 
+    std::vector<std::pair<Point,Vector>> pvs = {
+    std::pair<Point, Vector>{Point(1,1.5,0), Vector(0.1,1,0)},
+    std::pair<Point, Vector>{Point(0,3,-5), Vector(0,0,1)},
+    std::pair<Point, Vector>{Point(0,0,-5), Vector(0,0,1)},
+    std::pair<Point, Vector>{Point(0,2,-5), Vector(0,0,1)},
+    std::pair<Point, Vector>{Point(0,1,-5), Vector(0,0,1)},
+    std::pair<Point, Vector>{Point(0,1.5,-2), Vector(0,0,1)}};
+    
+    REQUIRE(cyl.minimum == 1); 
+    REQUIRE(cyl.maximum == 2); 
+
+    std::vector<int> counts = {0,0,0,0,0,2}; 
+
+    for(int i = 0; i < pvs.size(); i++)
+    {
+        Vector direction = pvs[i].second.normalize(); 
+        Ray r(pvs[i].first,direction); 
+        std::vector<Intersection> xs = cyl.local_intersect(r); 
+        REQUIRE(xs.size() == counts[i]); 
+    }
+}
+
+TEST_CASE("The default closed value for a cylinder","[shapes][cylinder]")
+{
+    Cylinder cyl; 
+    REQUIRE(cyl.type == CYL_TYPE::OPEN); 
+}
+
+TEST_CASE("Intersecting a capped cylinder","[shapes][cylinder]")
+{
+    Cylinder cyl(1,2,CYL_TYPE::CLOSED); 
+    std::vector<std::pair<Point,Vector>> pvs = {
+    std::pair<Point, Vector>{Point(0,3,0), Vector(0,-1,0)},
+    std::pair<Point, Vector>{Point(0,3,-2), Vector(0,-1,2)},
+    std::pair<Point, Vector>{Point(0,4,-2), Vector(0,-1,1)},
+    std::pair<Point, Vector>{Point(0,0,-2), Vector(0,1,2)},
+    std::pair<Point, Vector>{Point(0,-1,-2), Vector(0,1,1)}};
+    
+    REQUIRE(cyl.minimum == 1); 
+    REQUIRE(cyl.maximum == 2); 
+
+    std::vector<int> counts = {2,2,2,2,2}; 
+
+    for(int i = 0; i < pvs.size(); i++)
+    {
+        Vector direction = pvs[i].second.normalize(); 
+        Ray r(pvs[i].first,direction); 
+        std::vector<Intersection> xs = cyl.local_intersect(r); 
+        REQUIRE(xs.size() == counts[i]); 
+    }
+}
+
+TEST_CASE("The normal vector on a cylinders end caps","[shapes][cylinder]")
+{
+    Cylinder cyl(1,2,CYL_TYPE::CLOSED); 
+    std::vector<std::pair<Point,Vector>> pvs = {
+    std::pair<Point, Vector>{Point(0,1,0), Vector(0,-1,0)},
+    std::pair<Point, Vector>{Point(0.5,1,0), Vector(0,-1,0)},
+    std::pair<Point, Vector>{Point(0,1,0.5), Vector(0,-1,0)},
+    std::pair<Point, Vector>{Point(0,2,0), Vector(0,1,0)},
+    std::pair<Point, Vector>{Point(0.5,2,0), Vector(0,1,0)},
+    std::pair<Point, Vector>{Point(0,2,0.5), Vector(0,1,0)}
+};
+    
+    REQUIRE(cyl.minimum == 1); 
+    REQUIRE(cyl.maximum == 2); 
+
+    for(int i = 0; i < pvs.size(); i++)
+    {
+        Vector n = cyl.local_normal_at(pvs[i].first); 
+        REQUIRE(n == pvs[i].second); 
+    }
+}
