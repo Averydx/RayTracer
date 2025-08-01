@@ -4,6 +4,7 @@
 #include "tools.h"
 
 #include <algorithm>
+#include <iostream>
 
 
 World::World()
@@ -21,12 +22,13 @@ World::~World()
     {
         delete s; 
     }
+
 }
 
-std::vector<Intersection> World::intersect(const Ray& ray) const
+std::vector<Intersection> World::intersect(const Ray& ray)
 {
-    std::vector<Intersection> intersection_list; 
-    intersection_list.reserve(world_objects.size() * 2); 
+    //std::vector<Intersection> intersection_list = bvh_intersect(this->bvh,ray); 
+    std::vector<Intersection> intersection_list = {}; 
     for(Shape* s: this->world_objects)
     {
         std::vector<Intersection> temp_list = s->intersect(ray); 
@@ -37,7 +39,7 @@ std::vector<Intersection> World::intersect(const Ray& ray) const
     return intersection_list; 
 }
 
-Color World::shade_hit(const Computations& comps,int remaining) const
+Color World::shade_hit(const Computations& comps,int remaining)
 {
     bool in_shadow = this->is_shadowed(comps.over_point); 
 
@@ -59,7 +61,7 @@ Color World::shade_hit(const Computations& comps,int remaining) const
         return surface + reflected + refracted;    
 }
 
-Color World::color_at(const Ray& ray,int remaining) const
+Color World::color_at(const Ray& ray,int remaining)
 {
     std::vector<Intersection> _ints = this->intersect(ray); 
     const Intersection* hit = find_hit(_ints); 
@@ -72,7 +74,7 @@ Color World::color_at(const Ray& ray,int remaining) const
     return shade_hit(comps,remaining); 
 }
 
-bool World::is_shadowed(const Point& point) const
+bool World::is_shadowed(const Point& point)
 {
     Vector shadow_vec = this->world_light.position - point; 
     double distance = shadow_vec.magnitude(); 
@@ -87,7 +89,7 @@ bool World::is_shadowed(const Point& point) const
     return false; 
 }
 
-Color World::reflected_color(const Computations& comps,int remaining) const
+Color World::reflected_color(const Computations& comps,int remaining)
 {
     if(remaining <= 1)
         return Color(0.0,0.0,0.0); 
@@ -107,7 +109,7 @@ void World::empty_objects()
     this->world_objects.clear(); 
 }
 
-Color World::refracted_color(const Computations& comps,int remaining) const
+Color World::refracted_color(const Computations& comps,int remaining)
 {
     if(remaining == 0)
         return Color(0,0,0); 
@@ -137,7 +139,7 @@ Color World::refracted_color(const Computations& comps,int remaining) const
     return color; 
 }
 
-double World::schlick(const Computations& comps) const
+double World::schlick(const Computations& comps)
 {
     double _cos = comps.eyev * comps.normalv;
 
@@ -159,3 +161,4 @@ double World::schlick(const Computations& comps) const
     double r0 = pow(((comps.n1 - comps.n2)/(comps.n1 + comps.n2)),2); 
     return r0 + (1-r0) * pow(1-_cos,5);  
 }
+

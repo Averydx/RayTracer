@@ -4,6 +4,11 @@
 #include <math.h>
 #include <algorithm> 
 
+AABB Sphere::bounds() const
+{
+    return AABB(Point(-1,-1,-1),Point(1,1,1)); 
+}
+
 std::vector<Intersection> Sphere::local_intersect(const Ray& r) const
 {
     std::vector<Intersection> intersection_list; 
@@ -34,6 +39,11 @@ Vector Sphere::local_normal_at(const Point& object_point) const
 
 }
 
+AABB Plane::bounds() const
+{
+    return AABB(Point(this->x_minimum,-EPSILON,this->z_minimum),Point(this->x_maximum,EPSILON,this->z_maximum)); 
+}
+
 Vector Plane::local_normal_at(const Point& object_point) const
 {
     return Vector(0,1,0); 
@@ -48,6 +58,11 @@ std::vector<Intersection> Plane::local_intersect(const Ray& r) const
     double t = (-r.origin.y/r.direction.y); 
     intersection_list.push_back(Intersection(t,this)); 
     return intersection_list; 
+}
+
+AABB Cube::bounds() const
+{
+    return AABB(Point(-1,-1,-1),Point(1,1,1)); 
 }
 
 Vector Cube::local_normal_at(const Point& object_point) const
@@ -169,6 +184,11 @@ void Cylinder::intersect_caps(const Ray& r, std::vector<Intersection>& xs) const
     t = (this->maximum - r.origin.y) / r.direction.y; 
     if(check_cap(r,t))
         xs.push_back(Intersection(t,this)); 
+}
+
+AABB Cylinder::bounds() const
+{
+    return AABB(Point(-1,this->minimum,-1),Point(1,this->maximum,1)); 
 }
 
 Sphere* glass_sphere()

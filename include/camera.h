@@ -48,7 +48,7 @@ class Camera
         Ray ray_for_pixel(double px, double py) const;      
 }; 
 
-Canvas render(const Camera& c, const World& w); 
+Canvas render(const Camera& c, World& w); 
 
 
 

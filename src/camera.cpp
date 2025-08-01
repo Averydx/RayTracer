@@ -3,7 +3,9 @@
 #include "vector.h"
 #include "color.h"
 #include "ray.h"
+#include "bvh.h"
 
+#include <iostream>
 
 Ray Camera::ray_for_pixel(double px, double py) const
 {
@@ -25,7 +27,7 @@ Ray Camera::ray_for_pixel(double px, double py) const
 } 
 
 
-Canvas render(const Camera& c, const World& w)
+Canvas render(const Camera& c, World& w)
 {
     Canvas image(c.hsize,c.vsize); 
 

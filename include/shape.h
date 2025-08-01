@@ -5,8 +5,28 @@
 #include "intersection.h"
 #include "materials.h"
 #include "matrix.h"
+#include "tools.h"
 
 #include <vector> 
+#include <limits>
+#include <array>
+
+class AABB
+{
+    public: 
+        Point minimum = Point(-EPSILON,-EPSILON,-EPSILON); 
+        Point maximum = Point(EPSILON,EPSILON,EPSILON);  
+
+        AABB(Point min, Point max):minimum(min),maximum(max){}
+        AABB(){}
+        ~AABB() = default; 
+
+        AABB transform(const Matrix& mat); 
+        bool check_intersect(const Ray& r) const; 
+
+        //helper functions
+        std::array<double,2> AABB::check_axis(double origin, double direction,AXIS ax) const;
+}; 
 
 class Shape
 {
@@ -19,6 +39,7 @@ class Shape
 
         virtual std::vector<Intersection> local_intersect(const Ray& r) const = 0; 
         virtual Vector local_normal_at(const Point& object_point) const = 0; 
+        virtual AABB bounds() const = 0; 
 
         void setTransform(const Matrix& m); 
         Matrix getTransform() const; 
