@@ -6,7 +6,7 @@
 
 Color Pattern::color_at_object(const Shape* object, const Point& world_point) const
 {
-    Point object_point = object->transform.inverse() * world_point; 
+    Point object_point = world_to_object(object,world_point); 
     Point pattern_point = this->transform.inverse() * object_point; 
 
     return this->color_at(pattern_point); 

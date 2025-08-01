@@ -15,6 +15,11 @@ World::World()
 
     this->world_objects[0]->setMaterial(Material(0.1,0.7,0.2,200.,Color(0.8,1.0,0.6))); 
     this->world_objects[1]->setTransform(scaling(0.5,0.5,0.5)); 
+
+    std::vector<Shape*> flat_list;
+    flatten(world_objects,flat_list); 
+
+    this->bvh = build_bvh(flat_list,2); 
 }
 World::~World()
 {
@@ -27,13 +32,13 @@ World::~World()
 
 std::vector<Intersection> World::intersect(const Ray& ray)
 {
-    //std::vector<Intersection> intersection_list = bvh_intersect(this->bvh,ray); 
-    std::vector<Intersection> intersection_list = {}; 
-    for(Shape* s: this->world_objects)
-    {
-        std::vector<Intersection> temp_list = s->intersect(ray); 
-        intersection_list.insert(intersection_list.end(),temp_list.begin(),temp_list.end()); 
-    }
+    std::vector<Intersection> intersection_list = bvh_intersect(this->bvh,ray); 
+    // std::vector<Intersection> intersection_list = {}; 
+    // for(Shape* s: this->world_objects)
+    // {
+    //     std::vector<Intersection> temp_list = s->intersect(ray); 
+    //     intersection_list.insert(intersection_list.end(),temp_list.begin(),temp_list.end()); 
+    // }
     std::sort(intersection_list.begin(),intersection_list.end(),comp_intersection); 
 
     return intersection_list; 
@@ -160,5 +165,16 @@ double World::schlick(const Computations& comps)
 
     double r0 = pow(((comps.n1 - comps.n2)/(comps.n1 + comps.n2)),2); 
     return r0 + (1-r0) * pow(1-_cos,5);  
+}
+
+void World::add_object(Shape* s)
+{
+    this->world_objects.push_back(s); 
+    delete_bvh(this->bvh); 
+
+    std::vector<Shape*> flat_list; 
+    flatten(world_objects,flat_list); 
+
+    this->bvh = build_bvh(flat_list,2); 
 }
 

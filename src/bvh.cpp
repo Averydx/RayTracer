@@ -179,16 +179,15 @@ bool bvh_intersect_recursive(BVHNode* node, const Ray& r,std::vector<Intersectio
 
 void delete_bvh(BVHNode* node)
 {
-    if(node->isLeaf)
-    {
-        delete node; 
+    if(node == nullptr)
         return; 
-    }
 
     delete_bvh(node->left); 
     delete_bvh(node->right); 
 
+    //std::cout << "Deleting node: " << node << "\n";
     delete node; 
+    node=nullptr; 
 }
 
 void print_bvh_stats(BVHNode* node, int depth)
@@ -198,6 +197,7 @@ void print_bvh_stats(BVHNode* node, int depth)
 
     std::string indent(depth * 2, ' ');
     std::cout << indent << (node->isLeaf ? "Leaf" : "Internal")
+              << " | Address: "<< node
               << " | Depth: " << depth
               << " | Primitives: " << (node->isLeaf ? node->primitives.size() : 0)
               << std::endl;
@@ -207,5 +207,21 @@ void print_bvh_stats(BVHNode* node, int depth)
         print_bvh_stats(node->right, depth + 1);
     }
 }
+}
+
+void flatten(std::vector<Shape*>& in_list,std::vector<Shape*>& out_list)
+{
+    for(Shape* s: in_list)
+    {
+        if(s->isGroup)
+        {
+            Group* _s = static_cast<Group*>(s); 
+            flatten(_s->children,out_list); 
+        }
+        else
+        {
+            out_list.push_back(s);   
+        }  
+    }
 }
 

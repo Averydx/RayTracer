@@ -2,6 +2,7 @@
 #define BVH_H
 
 #include "shape.h"
+#include "shapes.h"
 #include "tools.h"
 #include "intersection.h"
 
@@ -10,8 +11,8 @@
 struct BVHNode
 {
     AABB bbox; 
-    BVHNode* left; 
-    BVHNode* right; 
+    BVHNode* left = nullptr; 
+    BVHNode* right = nullptr; 
     std::vector<Shape*> primitives;  
     bool isLeaf = false; 
 
@@ -42,5 +43,7 @@ int count_bvh(BVHNode* bvh);
 void delete_bvh(BVHNode* node); 
 
 void print_bvh_stats(BVHNode* node, int depth = 0); 
+
+void flatten(std::vector<Shape*>& in_list,std::vector<Shape*>& out_list);
 
 #endif

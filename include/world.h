@@ -28,6 +28,7 @@ class World
     //methods
     Color color_at(const Ray& ray,int remaining = MAX_DEPTH); 
     void empty_objects(); 
+    void add_object(Shape* s); 
 
     //helper functions 
     std::vector<Intersection> intersect(const Ray& ray); 

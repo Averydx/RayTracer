@@ -435,3 +435,142 @@ TEST_CASE("The normal vector on a cylinders end caps","[shapes][cylinder]")
         REQUIRE(n == pvs[i].second); 
     }
 }
+
+TEST_CASE("Creating a new group","[shapes][group]")
+{
+    Group g;
+    Matrix I(4,4); 
+    I.setIdentity();  
+    REQUIRE(g.transform == I); 
+    REQUIRE(g.children.empty()); 
+}
+
+TEST_CASE("A shape has a parent attribute","[shapes][group]")
+{
+    Sphere s; 
+    REQUIRE(s.parent == nullptr); 
+}
+
+TEST_CASE("Adding a child to a group","[shapes][group]")
+{
+    Group g; 
+    Sphere* s = new Sphere(); 
+    g.add_child(s); 
+    REQUIRE(!g.children.empty()); 
+    REQUIRE(g.children[0] == s); 
+    REQUIRE(s->parent == &g); 
+}
+
+TEST_CASE("Intersecting a ray with an empty group","[shapes][group]")
+{
+    Group g; 
+    Ray r(Point(0,0,0),Vector(0,0,1)); 
+    std::vector<Intersection> xs = g.local_intersect(r); 
+
+    REQUIRE(xs.empty()); 
+}
+
+TEST_CASE("Intersecting a ray with a nonempty group","[shapes][group]")
+{
+    Group g; 
+    Sphere* s1 = new Sphere(); 
+
+    Sphere* s2 = new Sphere(); 
+    s2->transform = translation(0,0,-3); 
+
+    Sphere* s3 = new Sphere(); 
+    s3->transform = translation(5,0,0); 
+
+    g.add_child(s1); 
+    g.add_child(s2); 
+    g.add_child(s3); 
+
+    Ray r(Point(0,0,-5),Vector(0,0,1)); 
+
+    std::vector<Intersection> xs = g.local_intersect(r); 
+
+    REQUIRE(xs.size() == 4);
+    REQUIRE(xs[0].s == s2); 
+    REQUIRE(xs[1].s == s2);
+    REQUIRE(xs[2].s == s1);
+    REQUIRE(xs[3].s == s1);
+}
+
+TEST_CASE("Intersecting a transformed group","[shapes][group]")
+{
+    Group g; 
+    Sphere* s1 = new Sphere(); 
+
+    g.transform = scaling(2,2,2); 
+    s1->transform = translation(5,0,0); 
+
+    g.add_child(s1); 
+
+    Ray r(Point(10,0,-10),Vector(0,0,1)); 
+    std::vector<Intersection> xs = g.intersect(r); 
+
+    REQUIRE(xs.size() == 2); 
+}
+
+TEST_CASE("Converting a point from world to object space","[shapes][group]")
+{
+    Group* g1 = new Group(); 
+    g1->transform = rotation_y(M_PI/2.0); 
+
+    Group* g2 = new Group(); 
+    g2->transform = scaling(2,2,2); 
+
+    g1->add_child(g2); 
+    Sphere* s = new Sphere(); 
+
+    s->transform = translation(5,0,0); 
+    g2->add_child(s); 
+
+    Point p = world_to_object(s,Point(-2,0,-10)); 
+
+    REQUIRE(p == Point(0,0,-1)); 
+
+    delete g1; 
+}
+
+TEST_CASE("Converting a normal from object to world space","[group][shapes]")
+{
+    Group* g1 = new Group(); 
+    g1->transform = rotation_y(M_PI/2.0);
+
+    Group* g2 = new Group(); 
+    g2->transform = scaling(1,2,3); 
+
+    g1->add_child(g2);
+
+    Sphere* s = new Sphere(); 
+    s->transform = translation(5,0,0); 
+
+    g2->add_child(s);
+
+    Vector n = normal_to_world(s,Vector(sqrt(3)/3.0,sqrt(3)/3.0,sqrt(3)/3.0));
+    REQUIRE(n == Vector(0.2857,0.4286,-0.8571));
+
+}
+
+TEST_CASE("Finding the normal on a child object","[group][shapes]")
+{
+    Group* g1 = new Group(); 
+    g1->transform = rotation_y(M_PI/2.0);
+
+    Group* g2 = new Group(); 
+    g2->transform = scaling(1,2,3); 
+
+    g1->add_child(g2);
+
+    Sphere* s = new Sphere(); 
+    s->transform = translation(5,0,0); 
+
+    g2->add_child(s);
+
+    Vector n = s->normal_at(Point(1.73321,1.1547,-5.5774)); 
+    REQUIRE(n == Vector(0.2857,0.4286,-0.8571)); 
+}
+
+
+

@@ -4,6 +4,7 @@
 #include <math.h>
 #include <algorithm> 
 
+
 AABB Sphere::bounds() const
 {
     return AABB(Point(-1,-1,-1),Point(1,1,1)); 
@@ -191,6 +192,56 @@ AABB Cylinder::bounds() const
     return AABB(Point(-1,this->minimum,-1),Point(1,this->maximum,1)); 
 }
 
+std::vector<Intersection> Group::local_intersect(const Ray& r) const
+{
+    std::vector<Intersection> xs; 
+    for(Shape* s: this->children)
+    {
+        std::vector<Intersection> temp = s->intersect(r); 
+        xs.insert(xs.end(),temp.begin(),temp.end()); 
+    }
+
+    std::sort(xs.begin(),xs.end(),comp_intersection); 
+
+    return xs; 
+} 
+
+//methods
+Vector Group::local_normal_at(const Point& object_point) const
+{
+    return Vector(0,0,0); 
+}
+
+AABB Group::bounds() const
+{
+    AABB bbox; 
+    for(Shape* child:this->children)
+    {
+       AABB child_box = child->bounds();
+       child_box = child_box.transform(child->transform);
+       bbox = box_union(bbox,child_box); 
+    }
+
+    return bbox; 
+}
+
+void Group::add_child(Shape* s)
+{
+    s->parent = this; 
+    this->children.push_back(s); 
+}
+
+Group::~Group()
+{
+    if(!this->children.empty())
+    {
+        for(Shape* s: this->children)
+        {
+            delete s; 
+        }
+    }
+}
+
 Sphere* glass_sphere()
 {
     Sphere* s = new Sphere(); 
@@ -201,4 +252,8 @@ Sphere* glass_sphere()
     s->mat.shininess = 300; 
     return s; 
 }
+
+
+
+
 

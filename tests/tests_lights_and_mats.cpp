@@ -319,7 +319,7 @@ TEST_CASE("Reflective surfaces","[lighting]")
         Plane* shape = new Plane(); 
         shape->mat.reflective = 0.5; 
         shape->transform = translation(0,-1,0); 
-        w.world_objects.push_back(shape); 
+        w.add_object(shape); 
 
         Ray r(Point(0,0,-3),Vector(0,-sqrt(2)/2.f,sqrt(2)/2.f)); 
         Intersection I(sqrt(2),shape); 
@@ -339,7 +339,7 @@ TEST_CASE("shade_hit() with a reflective material","[lighting]")
     Plane* shape = new Plane();
     shape->mat.reflective = 0.5; 
     shape->transform = translation(0,-1,0); 
-    w.world_objects.push_back(shape); 
+    w.add_object(shape); 
 
     Ray r(Point(0,0,-3),Vector(0,-sqrt(2)/2.f,sqrt(2)/2.f)); 
     Intersection I(sqrt(2),shape);
@@ -399,7 +399,7 @@ TEST_CASE("The reflected color at the maximum recursive depth","[lighting]")
     Plane* shape = new Plane();
     shape->mat.reflective = 0.5; 
     shape->transform = translation(0,-1,0); 
-    w.world_objects.push_back(shape); 
+    w.add_object(shape); 
 
     Ray r(Point(0,0,-3),Vector(0,-sqrt(2)/2.f,sqrt(2)/2.f)); 
     Intersection I(sqrt(2),shape);
@@ -541,8 +541,8 @@ TEST_CASE("shade_hit() with a transparent material","[material][refraction]")
     ball->mat.ambient = 0.5; 
     ball->transform = translation(0,-3.5,-0.5); 
 
-    w.world_objects.push_back(floor); 
-    w.world_objects.push_back(ball); 
+    w.add_object(floor); 
+    w.add_object(ball); 
 
     Ray r(Point(0,0,-3),Vector(0,-sqrt(2)/2.f,sqrt(2)/2.f)); 
     std::vector<Intersection> xs = intersections({Intersection(sqrt(2),floor)}); 
@@ -562,13 +562,13 @@ TEST_CASE("shade_hit() with a reflective, transparent material","[refraction]")
     floor->mat.reflective = 0.5; 
     floor->mat.transparency = 0.5; 
     floor->mat.refractive_index = 1.5; 
-    w.world_objects.push_back(floor); 
+    w.add_object(floor); 
 
     Sphere* ball = new Sphere(); 
     ball->mat.mat_color = Color(1,0,0); 
     ball->mat.ambient = 0.5; 
     ball->transform = translation(0,-3.5,-0.5); 
-    w.world_objects.push_back(ball); 
+    w.add_object(ball); 
     std::vector<Intersection> xs = intersections({Intersection(sqrt(2),floor)}); 
     Computations comps(xs[0],r,xs); 
     Color color = w.shade_hit(comps,5); 

@@ -9,6 +9,7 @@
 #include "vector.h"
 #include "point.h"
 #include "materials.h"
+#include "bvh.h"
 
 #include <array>
 
@@ -30,13 +31,22 @@ class Sphere : public Shape
 class Group: public Shape
 {
     public:
-
     //Constructors
-    Group():Shape(){}
+    Group():Shape(){isGroup = true;}
+    
+    //Need destructor
+    ~Group(); 
+
     std::vector<Intersection> local_intersect(const Ray& r) const override; 
     
     //methods
     Vector local_normal_at(const Point& object_point) const override; 
+    AABB bounds() const;
+    void add_child(Shape* s); 
+
+    //fields
+    std::vector<Shape*> children; 
+
 }; 
 
 class Plane : public Shape
