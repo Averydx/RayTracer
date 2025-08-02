@@ -44,6 +44,7 @@ class Group: public Shape
     Vector local_normal_at(const Point& object_point) const override; 
     AABB bounds() const;
     void add_child(Shape* s); 
+    void percolate_material();
 
     //fields
     std::vector<Shape*> children; 
@@ -110,6 +111,25 @@ class Cylinder: public Shape
     double maximum = 100; 
     double minimum = -100; 
     CYL_TYPE type = CYL_TYPE::OPEN; 
+}; 
+
+class Triangle: public Shape
+{
+    public: 
+    Triangle(const Point& _p1, const Point& _p2, const Point& _p3):Shape(),p1(_p1),p2(_p2),p3(_p3){e1 = p2 - p1; e2 = p3 - p1; normal = (e2^e1).normalize(); }
+    std::vector<Intersection> local_intersect(const Ray& r) const override; 
+    Vector local_normal_at(const Point& object_point) const override; 
+    AABB bounds() const; 
+
+    //fields 
+    Point p1; 
+    Point p2; 
+    Point p3; 
+
+    Vector e1; 
+    Vector e2; 
+
+    Vector normal; 
 }; 
 
 Sphere* glass_sphere(); 

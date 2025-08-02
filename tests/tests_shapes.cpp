@@ -572,5 +572,85 @@ TEST_CASE("Finding the normal on a child object","[group][shapes]")
     REQUIRE(n == Vector(0.2857,0.4286,-0.8571)); 
 }
 
+TEST_CASE("Constructing a triangle","[triangle][shapes]")
+{
+    Point p1(0,1,0); 
+    Point p2(-1,0,0); 
+    Point p3(1,0,0); 
+
+    Triangle t(p1,p2,p3); 
+    REQUIRE(t.p1 == p1); 
+    REQUIRE(t.p2 == p2); 
+    REQUIRE(t.p3 == p3); 
+    REQUIRE(t.e1 == Vector(-1,-1,0)); 
+    REQUIRE(t.e2 == Vector(1,-1,0)); 
+    REQUIRE(t.normal == Vector(0,0,-1)); 
+}
+
+TEST_CASE("Finding the normal on a triangle","[triangle][shapes]")
+{
+    Triangle t(Point(0,1,0),Point(-1,0,0),Point(1,0,0)); 
+    Vector n1 = t.local_normal_at(Point(0,0.5,0)); 
+    Vector n2 = t.local_normal_at(Point(-0.5,0.75,0));
+    Vector n3 = t.local_normal_at(Point(0.5,0.25,0));\
+
+    REQUIRE(n1 == t.normal); 
+    REQUIRE(n2 == t.normal); 
+    REQUIRE(n3 == t.normal); 
+}
+
+TEST_CASE("Intersecting a ray parallel to the triangle","[triangle][shapes]")
+{
+    Triangle t(Point(0,1,0),Point(-1,0,0),Point(1,0,0)); 
+    Ray r(Point(0,-1,-2),Vector(0,1,0)); 
+
+    std::vector<Intersection> xs = t.local_intersect(r); 
+
+    REQUIRE(xs.empty()); 
+}
+
+TEST_CASE("A ray misses the p1-p3 edge","[triangle][shapes]")
+{
+    Triangle t(Point(0,1,0),Point(-1,0,0),Point(1,0,0)); 
+    Ray r(Point(1,1,-2),Vector(0,0,1)); 
+
+    std::vector<Intersection> xs = t.local_intersect(r); 
+
+    REQUIRE(xs.empty()); 
+}
+
+TEST_CASE("A ray misses the p1-p2 edge","[triangle][shapes]")
+{
+    Triangle t(Point(0,1,0),Point(-1,0,0),Point(1,0,0)); 
+    Ray r(Point(-1,1,-2),Vector(0,0,1)); 
+
+    std::vector<Intersection> xs = t.local_intersect(r); 
+
+    REQUIRE(xs.empty()); 
+}
+
+TEST_CASE("A ray misses the p2-p3 edge","[triangle][shapes]")
+{
+    Triangle t(Point(0,1,0),Point(-1,0,0),Point(1,0,0)); 
+    Ray r(Point(0,-1,-2),Vector(0,0,1)); 
+
+    std::vector<Intersection> xs = t.local_intersect(r); 
+
+    REQUIRE(xs.empty()); 
+}
+
+TEST_CASE("A ray strikes a triangle","[triangle][shapes]")
+{
+    Triangle t(Point(0,1,0),Point(-1,0,0),Point(1,0,0)); 
+    Ray r(Point(0,0.5,-2),Vector(0,0,1)); 
+
+    std::vector<Intersection> xs = t.local_intersect(r); 
+
+    REQUIRE(xs.size() == 1);
+    REQUIRE(xs[0].t == 2);  
+}
+
+
+
 
 

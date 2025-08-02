@@ -254,6 +254,67 @@ Group::~Group()
     }
 }
 
+void Group::percolate_material()
+{
+    for(Shape* child: this->children)
+    {
+        child->mat = this->mat; 
+        if(child->isGroup)
+        {
+            Group* g = static_cast<Group*>(child); 
+            g->percolate_material(); 
+        }
+    }
+}
+
+std::vector<Intersection> Triangle::local_intersect(const Ray& r) const 
+{
+    std::vector<Intersection> xs = std::vector<Intersection>(); 
+    Vector dir_cross_e2 = r.direction ^ this->e2; 
+    double det = this->e1 * dir_cross_e2; 
+
+    //Check if the ray is parallel to the triangle
+    if(abs(det)<EPSILON)
+        return xs; 
+
+    //Checks if the ray misses the p1-p3 edge
+    double f = 1.0/det; 
+    Vector p1_to_origin = r.origin - this->p1; 
+    double u = f * (p1_to_origin * dir_cross_e2); 
+
+    if(u < 0 || u > 1)
+        return xs;
+      
+    Vector origin_cross_e1 = p1_to_origin ^ this->e1; 
+    double v = f * (r.direction * origin_cross_e1); 
+
+    if(v < 0 || ((u + v) > 1))
+        return xs; 
+
+    double t = f * (this->e2 * origin_cross_e1); 
+    xs.push_back(Intersection(t,this)); 
+
+    return xs; 
+    
+}
+Vector Triangle::local_normal_at(const Point& object_point) const
+{
+    return this->normal; 
+}
+AABB Triangle::bounds() const
+{
+    double x_min = std::min(std::min(p1.x,p2.x),p3.x); 
+    double y_min = std::min(std::min(p1.y,p2.y),p3.y);
+    double z_min = std::min(std::min(p1.z,p2.z),p3.z);
+
+    double x_max = std::max(std::max(p1.x,p2.x),p3.x); 
+    double y_max = std::max(std::max(p1.y,p2.y),p3.y);
+    double z_max = std::max(std::max(p1.z,p2.z),p3.z);
+    
+
+    return AABB(Point(x_min,y_min,z_min),Point(x_max,y_max,z_max)); 
+}
+
 Sphere* glass_sphere()
 {
     Sphere* s = new Sphere(); 

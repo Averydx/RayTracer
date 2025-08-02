@@ -55,7 +55,10 @@ int main(int argc, char *argv[])
     {
         Group* hex = hexagon(); 
         hex->transform = translation(distrib_2(gen),distrib_2(gen),distrib_2(gen)) * scaling(0.5,0.5,0.5); 
-        //hex->mat.mat_color = Color(distrib_1(gen),distrib_1(gen),distrib_1(gen)); 
+        hex->mat.mat_color = Color(distrib_1(gen),distrib_1(gen),distrib_1(gen)); 
+        hex->mat.transparency = 0.5; 
+        hex->mat.reflective = 0.5; 
+        hex->percolate_material(); 
         w.add_object(hex);
     }
 

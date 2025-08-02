@@ -29,3 +29,17 @@ TEST_CASE("Creating and deleting bvh","[bvh]")
         delete s; 
     }
 }
+
+TEST_CASE("Bounding box for a triangle","[triangle][shapes][bvh]")
+{
+    Point p1(-3,7,2); 
+    Point p2(6,2,-4); 
+    Point p3(2,-1,-1); 
+
+    Triangle t(p1,p2,p3); 
+    AABB box = t.bounds(); 
+
+    REQUIRE(box.minimum == Point(-3,-1,-4)); 
+    REQUIRE(box.maximum == Point(6,7,2));
+}
+
