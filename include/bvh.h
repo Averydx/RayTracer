@@ -33,9 +33,9 @@ AXIS chooseSplitAxis(const AABB& cbox);
 AABB box_union(const AABB& box1, const AABB& box2); 
 
 BVHNode* build_bvh(std::vector<Shape*>& primitives, int maxPrimsPerLeaf); 
+BVHNode* build_bvh_recursive(std::vector<Shape*>& primitives,int maxPrimsPerLeaf); 
 
 std::vector<Intersection> bvh_intersect(BVHNode* node,const Ray& r); 
-
 bool bvh_intersect_recursive(BVHNode* node, const Ray& r,std::vector<Intersection>& xs); 
 
 int count_bvh(BVHNode* bvh); 
@@ -44,6 +44,6 @@ void delete_bvh(BVHNode* node);
 
 void print_bvh_stats(BVHNode* node, int depth = 0); 
 
-void flatten(std::vector<Shape*>& in_list,std::vector<Shape*>& out_list);
+void flatten(const std::vector<Shape*>& in_list,std::vector<Shape*>& out_list);
 
 #endif

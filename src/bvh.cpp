@@ -101,8 +101,20 @@ AABB box_union(const AABB& box1, const AABB& box2)
 
     return AABB(minUnion,maxUnion); 
 }
-
 BVHNode* build_bvh(std::vector<Shape*>& primitives,int maxPrimsPerLeaf)
+{
+    if(primitives.size() == 0)
+    {
+        BVHNode* bvh = new BVHNode(); 
+        bvh->isLeaf = true; 
+        return bvh; 
+    }
+
+    return build_bvh_recursive(primitives,maxPrimsPerLeaf); 
+}
+
+
+BVHNode* build_bvh_recursive(std::vector<Shape*>& primitives,int maxPrimsPerLeaf)
 {
     //base case
     if(primitives.size() <= maxPrimsPerLeaf)
@@ -209,7 +221,8 @@ void print_bvh_stats(BVHNode* node, int depth)
 }
 }
 
-void flatten(std::vector<Shape*>& in_list,std::vector<Shape*>& out_list)
+//Needs thought
+void flatten(const std::vector<Shape*>& in_list,std::vector<Shape*>& out_list)
 {
     for(Shape* s: in_list)
     {
@@ -218,10 +231,7 @@ void flatten(std::vector<Shape*>& in_list,std::vector<Shape*>& out_list)
             Group* _s = static_cast<Group*>(s); 
             flatten(_s->children,out_list); 
         }
-        else
-        {
-            out_list.push_back(s);   
-        }  
+        out_list.push_back(s);   
     }
 }
 

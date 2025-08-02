@@ -16,10 +16,10 @@ World::World()
     this->world_objects[0]->setMaterial(Material(0.1,0.7,0.2,200.,Color(0.8,1.0,0.6))); 
     this->world_objects[1]->setTransform(scaling(0.5,0.5,0.5)); 
 
-    std::vector<Shape*> flat_list;
-    flatten(world_objects,flat_list); 
+    //std::vector<Shape*> flat_list;
+    //flatten(world_objects,flat_list); 
 
-    this->bvh = build_bvh(flat_list,2); 
+    this->bvh = build_bvh(world_objects,2); 
 }
 World::~World()
 {
@@ -172,9 +172,9 @@ void World::add_object(Shape* s)
     this->world_objects.push_back(s); 
     delete_bvh(this->bvh); 
 
-    std::vector<Shape*> flat_list; 
-    flatten(world_objects,flat_list); 
+    //std::vector<Shape*> flat_list; 
+    //flatten(world_objects,flat_list); 
 
-    this->bvh = build_bvh(flat_list,2); 
+    this->bvh = build_bvh(world_objects,2); 
 }
 

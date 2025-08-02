@@ -1,6 +1,8 @@
 #include "shapes.h"
 #include "tools.h"
+#include "transformations.h"
 
+#define _USE_MATH_DEFINES
 #include <math.h>
 #include <algorithm> 
 
@@ -192,14 +194,21 @@ AABB Cylinder::bounds() const
     return AABB(Point(-1,this->minimum,-1),Point(1,this->maximum,1)); 
 }
 
+Group::Group():Shape()
+{
+    this->isGroup = true; 
+    this->bvh = build_bvh(children,2); 
+}
+
 std::vector<Intersection> Group::local_intersect(const Ray& r) const
 {
-    std::vector<Intersection> xs; 
-    for(Shape* s: this->children)
-    {
-        std::vector<Intersection> temp = s->intersect(r); 
-        xs.insert(xs.end(),temp.begin(),temp.end()); 
-    }
+    std::vector<Intersection> xs = bvh_intersect(this->bvh,r); 
+    // std::vector<Intersection> xs; 
+    // for(Shape* s: this->children)
+    // {
+    //     std::vector<Intersection> temp = s->intersect(r); 
+    //     xs.insert(xs.end(),temp.begin(),temp.end()); 
+    // }
 
     std::sort(xs.begin(),xs.end(),comp_intersection); 
 
@@ -229,6 +238,9 @@ void Group::add_child(Shape* s)
 {
     s->parent = this; 
     this->children.push_back(s); 
+
+    delete_bvh(this->bvh); 
+    this->bvh = build_bvh(this->children,2); 
 }
 
 Group::~Group()
@@ -251,6 +263,44 @@ Sphere* glass_sphere()
     s->mat.specular = 1; 
     s->mat.shininess = 300; 
     return s; 
+}
+
+Sphere* hexagon_corner()
+{
+    Sphere* corner = new Sphere(); 
+    corner->transform = translation(0,0,-1) * scaling(0.25,0.25,0.25); 
+
+    return corner; 
+}
+
+Cylinder* hexagon_edge()
+{
+    Cylinder* edge = new Cylinder(0,1);
+    edge->transform = translation(0,0,-1) * rotation_y(-M_PI/6.0) * rotation_z(-M_PI/2.0) * scaling(0.25,1,0.25); 
+    
+    return edge; 
+}
+
+Group* hexagon_side()
+{
+    Group* side = new Group(); 
+    side->add_child(hexagon_corner()); 
+    side->add_child(hexagon_edge()); 
+
+    return side; 
+}
+
+Group* hexagon()
+{
+    Group* hex = new Group(); 
+    for(int n = 0; n < 6; n++)
+    {
+        Group* side = hexagon_side(); 
+        side->transform = rotation_y(n * M_PI/3.0); 
+        hex->add_child(side); 
+    }
+
+    return hex; 
 }
 
 

@@ -13,6 +13,7 @@
 
 #include <array>
 
+class BVHNode; 
 
 class Sphere : public Shape
 {
@@ -32,7 +33,7 @@ class Group: public Shape
 {
     public:
     //Constructors
-    Group():Shape(){isGroup = true;}
+    Group(); 
     
     //Need destructor
     ~Group(); 
@@ -46,6 +47,7 @@ class Group: public Shape
 
     //fields
     std::vector<Shape*> children; 
+    BVHNode* bvh = nullptr; 
 
 }; 
 
@@ -111,5 +113,13 @@ class Cylinder: public Shape
 }; 
 
 Sphere* glass_sphere(); 
+
+Sphere* hexagon_corner(); 
+
+Cylinder* hexagon_edge(); 
+
+Group* hexagon_side(); 
+
+Group* hexagon(); 
 
 #endif

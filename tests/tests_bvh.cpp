@@ -6,7 +6,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <vector>
 
-TEST_CASE("Creating a bvh","[bvh]")
+TEST_CASE("Creating and deleting bvh","[bvh]")
 {
     std::vector<Shape*> list; 
 
@@ -20,4 +20,12 @@ TEST_CASE("Creating a bvh","[bvh]")
     BVHNode* bvh = build_bvh(list,2); 
 
     REQUIRE(bvh != nullptr); 
+    REQUIRE(count_bvh(bvh) == 10); 
+
+    delete_bvh(bvh); 
+
+    for(Shape* s: list)
+    {
+        delete s; 
+    }
 }
