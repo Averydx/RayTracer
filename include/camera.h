@@ -5,7 +5,6 @@
 #include "ray.h"
 #include "canvas.h"
 #include "world.h"
-
 #include <math.h>
 
 class Camera

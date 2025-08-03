@@ -197,7 +197,7 @@ AABB Cylinder::bounds() const
 Group::Group():Shape()
 {
     this->isGroup = true; 
-    this->bvh = build_bvh(children,2); 
+    this->refresh_bvh();  
 }
 
 std::vector<Intersection> Group::local_intersect(const Ray& r) const
@@ -238,9 +238,6 @@ void Group::add_child(Shape* s)
 {
     s->parent = this; 
     this->children.push_back(s); 
-
-    delete_bvh(this->bvh); 
-    this->bvh = build_bvh(this->children,2); 
 }
 
 Group::~Group()
@@ -263,6 +260,21 @@ void Group::percolate_material()
         {
             Group* g = static_cast<Group*>(child); 
             g->percolate_material(); 
+        }
+    }
+}
+
+void Group::refresh_bvh()
+{
+    delete_bvh(this->bvh); 
+    this->bvh = build_bvh(this->children,2); 
+
+    for(Shape* s: this->children)
+    {
+        if(s->isGroup)
+        {
+            Group* g = static_cast<Group*>(s); 
+            g->refresh_bvh(); 
         }
     }
 }

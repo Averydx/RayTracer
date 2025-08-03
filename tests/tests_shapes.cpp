@@ -464,6 +464,7 @@ TEST_CASE("Adding a child to a group","[shapes][group]")
 TEST_CASE("Intersecting a ray with an empty group","[shapes][group]")
 {
     Group g; 
+    g.refresh_bvh(); 
     Ray r(Point(0,0,0),Vector(0,0,1)); 
     std::vector<Intersection> xs = g.local_intersect(r); 
 
@@ -485,6 +486,8 @@ TEST_CASE("Intersecting a ray with a nonempty group","[shapes][group]")
     g.add_child(s2); 
     g.add_child(s3); 
 
+    g.refresh_bvh(); 
+
     Ray r(Point(0,0,-5),Vector(0,0,1)); 
 
     std::vector<Intersection> xs = g.local_intersect(r); 
@@ -505,6 +508,7 @@ TEST_CASE("Intersecting a transformed group","[shapes][group]")
     s1->transform = translation(5,0,0); 
 
     g.add_child(s1); 
+    g.refresh_bvh(); 
 
     Ray r(Point(10,0,-10),Vector(0,0,1)); 
     std::vector<Intersection> xs = g.intersect(r); 

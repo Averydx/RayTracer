@@ -45,9 +45,10 @@ class Group: public Shape
     AABB bounds() const;
     void add_child(Shape* s); 
     void percolate_material();
+    void refresh_bvh(); 
 
     //fields
-    std::vector<Shape*> children; 
+    std::vector<Shape*> children = {}; 
     BVHNode* bvh = nullptr; 
 
 }; 

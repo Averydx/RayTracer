@@ -5,7 +5,9 @@
 #include "ray.h"
 #include "bvh.h"
 
+#include <iomanip>
 #include <iostream>
+#include <omp.h>
 
 Ray Camera::ray_for_pixel(double px, double py) const
 {
@@ -31,17 +33,20 @@ Canvas render(const Camera& c, World& w)
 {
     Canvas image(c.hsize,c.vsize); 
 
-    #pragma omp parallel for
-    for(int y = 0; y < c.vsize;y++)
-    {
-        for(int x = 0; x < c.hsize; x++)
+    int total_pixel_count = c.hsize * c.vsize; 
+
+    #pragma omp parallel for default(none)
+        for(int i = 0; i < total_pixel_count;i++)
         {
+            int x = i % c.hsize; 
+            int y = i / c.hsize; 
+
             Ray r = c.ray_for_pixel(x,y); 
             Color color = w.color_at(r); 
 
             image.SetPixel(x,y,color); 
+
         }
-    }
 
     return image; 
 }

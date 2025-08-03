@@ -9,70 +9,60 @@
 #include "lights.h"
 #include "camera.h"
 #include "world.h"
-#include "bvh.h"
+#include "parser.h"
 
 #include <vector> 
 #define _USE_MATH_DEFINES
 #include <math.h>
-#include <random>
 #include <chrono>
 
 
 int main(int argc, char *argv[])
 {
-
-    std::mt19937 gen(0);
-    std::uniform_real_distribution<> distrib_1(0, 1);
-    std::uniform_real_distribution<> distrib_2(-5, 5);
-
+    
     Plane* floor = new Plane(); 
     floor->mat.pattern = new CheckerPattern(Color(1.f,1.f,1.f),Color(0.f,0.f,0.f));
     floor->mat.pattern->transform = scaling(0.33,0.33,0.33); 
 
     Plane* wall1 = new Plane(); 
     wall1->mat.mat_color = Color(0.768,0.768,0.768); 
-    wall1->mat.reflective = 1.0; 
-    wall1->setTransform(translation(0,0,10)*rotation_x(M_PI/2.f)); 
+    wall1->transform = (translation(0,0,10)*rotation_x(M_PI/2.f)); 
 
-    // Cube* cube = new Cube(); 
-    // cube->transform = translation(-3,1,0); 
-    // cube->mat.reflective = 0.3; 
-    // cube->mat.refractive_index = 1.2; 
-    // cube->mat.transparency = 0.2; 
-    // cube->mat.mat_color = Color(0.3,0.1,0.8); 
-
-    // Cylinder* cyl = new Cylinder(0,2,CYL_TYPE::CLOSED); 
-    // cyl->mat.transparency = 0.5; 
-    // cyl->mat.refractive_index = 1.3; 
-    // cyl->mat.reflective = 0.3; 
+    Group* walls = new Group(); 
+    walls->add_child(wall1); 
+    walls->add_child(floor); 
 
     World w; 
     w.world_light.position = Point(20,20,-20); 
     w.empty_objects(); 
 
-    //std::vector<Point> positions = {Point(0,1,0),Point(-2,1,2),Point(2,1,3),Point(0,1,4),Point(-5,1,4),Point(5,1,4),Point(1,1,-2),Point(1,1,2),Point(-3,1,0)}; 
-    for(int i = 0; i < 100; i++)
-    {
-        Group* hex = hexagon(); 
-        hex->transform = translation(distrib_2(gen),distrib_2(gen),distrib_2(gen)) * scaling(0.5,0.5,0.5); 
-        hex->mat.mat_color = Color(distrib_1(gen),distrib_1(gen),distrib_1(gen)); 
-        hex->mat.transparency = 0.5; 
-        hex->mat.reflective = 0.5; 
-        hex->percolate_material(); 
-        w.add_object(hex);
-    }
+    Parser p("C:/Users/avery/OneDrive/Desktop/RayTracer/models/teapot.obj"); 
+    p.read_file();
+    
+    std::cout<<"Vertices in file: "<<p.vertices.size()<<std::endl; 
 
-    Group* g2 = new Group(); 
-    g2->add_child(wall1); 
-    g2->add_child(floor);  
-    // g1->add_child(g2); 
-    w.add_object(g2); 
-    print_bvh_stats(w.bvh); 
+    p.default_group->transform = rotation_x(-M_PI/2.0) * scaling(0.2,0.2,0.2); 
+    p.default_group->mat.transparency = 1; 
+    p.default_group->mat.reflective = 1; 
+    p.default_group->mat.refractive_index = 1.5; 
+    p.default_group->mat.mat_color = Color(0.3,0.2,0.7);  
+    p.default_group->percolate_material(); 
 
-    //w.add_object(g2); 
+    std::cout<<"triangle count: "<<p.default_group->children.size()<<std::endl; 
 
-    Camera cam(1920,1080,M_PI/3.f);
+    Group* scene_group = new Group(); 
+    scene_group->add_child(p.default_group); 
+    scene_group->add_child(walls); 
+
+    scene_group->refresh_bvh(); 
+
+    w.add_object(scene_group); 
+    
+
+
+    Camera cam(600,400,M_PI/3.f);
     cam.transform = view_transform(Point(0,3,-6),Point(0,1,0),Vector(0,1,0));  
+
 
     std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
     Canvas image = render(cam,w); 
