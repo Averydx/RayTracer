@@ -9,7 +9,7 @@
 */
 
 constexpr double EPSILON = 0.01; 
-constexpr double BUMP_EPSILON = 1e-5; 
+constexpr double BUMP_EPSILON = 1e-3; 
 
 bool equal_double(double a, double b); 
 

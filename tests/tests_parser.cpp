@@ -51,3 +51,35 @@ TEST_CASE("Triangulating polygons")
     REQUIRE(t3->p3 == p.vertices[4]); 
 
 }
+
+TEST_CASE("Vertex normal records","[parser]")
+{
+    Parser p("C:/Users/avery/OneDrive/Desktop/RayTracer/models/vn_test.obj"); 
+    p.read_file(); 
+
+    REQUIRE(p.normals[0] == Vector(0,0,1)); 
+    REQUIRE(p.normals[1] == Vector(0.707,0,-0.707)); 
+    REQUIRE(p.normals[2] == Vector(1,2,3)); 
+}
+
+TEST_CASE("Faces with normals")
+{
+    Parser p("C:/Users/avery/OneDrive/Desktop/RayTracer/models/face_normals.obj"); 
+    p.read_file(); 
+
+    Group* g = p.default_group; 
+    SmoothTriangle* t1 = static_cast<SmoothTriangle*>(g->children[0]); 
+    SmoothTriangle* t2 = static_cast<SmoothTriangle*>(g->children[1]); 
+
+    // std::cout<<p.vertices.size()<<std::endl; 
+    // std::cout<<p.normals.size()<<std::endl; 
+
+    REQUIRE(t1->p1 == p.vertices[0]); 
+    REQUIRE(t1->p2 == p.vertices[1]); 
+    REQUIRE(t1->p3 == p.vertices[2]); 
+
+    REQUIRE(t1->n1 == p.normals[2]); 
+    REQUIRE(t1->n2 == p.normals[0]); 
+    REQUIRE(t1->n3 == p.normals[1]); 
+
+}

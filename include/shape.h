@@ -41,10 +41,10 @@ class Shape
         virtual ~Shape() = default; // Default destructor
 
         std::vector<Intersection> intersect(const Ray& r) const; // Intersects a ray with the shape, returning a list of intersections
-        Vector normal_at(const Point& world_point) const; // Calculates the normal vector at a given point in world coordinates
+        Vector normal_at(const Point& world_point,const Intersection& hit) const; // Calculates the normal vector at a given point in world coordinates
 
         virtual std::vector<Intersection> local_intersect(const Ray& r) const = 0; // Pure virtual method for local intersection, must be implemented by derived classes
-        virtual Vector local_normal_at(const Point& object_point) const = 0; // Pure virtual method for local normal calculation, must be implemented by derived classes
+        virtual Vector local_normal_at(const Point& object_point,const Intersection& hit) const = 0; // Pure virtual method for local normal calculation, must be implemented by derived classes
         virtual AABB bounds() const = 0; // Pure virtual method for bounding box calculation, must be implemented by derived classes
 
         void setTransform(const Matrix& m); // Sets the transformation matrix for the shape

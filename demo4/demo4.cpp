@@ -27,6 +27,7 @@ int main(int argc, char *argv[])
     Plane* wall1 = new Plane(); 
     wall1->mat.mat_color = Color(0.768,0.768,0.768); 
     wall1->transform = (translation(0,0,10)*rotation_x(M_PI/2.f)); 
+    wall1->mat.reflective = 1.0; 
 
     Group* walls = new Group(); 
     walls->add_child(wall1); 
@@ -36,12 +37,12 @@ int main(int argc, char *argv[])
     w.world_light.position = Point(20,20,-20); 
     w.empty_objects(); 
 
-    Parser p("C:/Users/avery/OneDrive/Desktop/RayTracer/models/teapot.obj"); 
+    Parser p("C:/Users/avery/OneDrive/Desktop/RayTracer/models/model.obj"); 
     p.read_file();
     
     std::cout<<"Vertices in file: "<<p.vertices.size()<<std::endl; 
 
-    p.default_group->transform = rotation_x(-M_PI/2.0) * scaling(0.2,0.2,0.2); 
+    p.default_group->transform = rotation_x(M_PI/8.0) * scaling(0.05,0.05,0.05); 
     p.default_group->mat.transparency = 1; 
     p.default_group->mat.reflective = 1; 
     p.default_group->mat.refractive_index = 1.5; 
@@ -58,10 +59,8 @@ int main(int argc, char *argv[])
 
     w.add_object(scene_group); 
     
-
-
-    Camera cam(600,400,M_PI/3.f);
-    cam.transform = view_transform(Point(0,3,-6),Point(0,1,0),Vector(0,1,0));  
+    Camera cam(1920,1080,M_PI/3.f);
+    cam.transform = view_transform(Point(0,7,-6),Point(0,2,0),Vector(0,1,0));  
 
 
     std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();

@@ -37,10 +37,10 @@ std::vector<Intersection> Shape::intersect(const Ray& r) const
 // This function transforms the world point into the local space of the shape
 // and then calls the local_normal_at method to find the normal vector.
 // It returns the normal vector in world coordinates.
-Vector Shape::normal_at(const Point& world_point) const
+Vector Shape::normal_at(const Point& world_point,const Intersection& hit) const
 {
     Point local_point = world_to_object(this,world_point); 
-    Vector local_normal = local_normal_at(local_point); 
+    Vector local_normal = local_normal_at(local_point,hit); 
     return normal_to_world(this,local_normal);
 }
 

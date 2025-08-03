@@ -24,7 +24,7 @@ class Sphere : public Shape
         std::vector<Intersection> local_intersect(const Ray& r) const override; 
         
         //methods
-        Vector local_normal_at(const Point& object_point) const override; 
+        Vector local_normal_at(const Point& object_point,const Intersection& hit) const override; 
         AABB bounds() const override; 
 
 }; 
@@ -41,7 +41,7 @@ class Group: public Shape
     std::vector<Intersection> local_intersect(const Ray& r) const override; 
     
     //methods
-    Vector local_normal_at(const Point& object_point) const override; 
+    Vector local_normal_at(const Point& object_point,const Intersection& hit) const override; 
     AABB bounds() const;
     void add_child(Shape* s); 
     void percolate_material();
@@ -62,7 +62,7 @@ class Plane : public Shape
         std::vector<Intersection> local_intersect(const Ray& r) const override; 
         
         //methods
-        Vector local_normal_at(const Point& object_point) const override; 
+        Vector local_normal_at(const Point& object_point,const Intersection& hit) const override; 
         AABB bounds() const; 
 
         //fields
@@ -79,10 +79,10 @@ class Cube : public Shape
     public: 
     //Constructors
     Cube():Shape(){}
-    std::vector<Intersection> local_intersect(const Ray& r) const override; 
-    
+    Vector local_normal_at(const Point& object_point,const Intersection& hit) const override; 
+    std::vector<Intersection> local_intersect(const Ray& r) const override;
     //methods
-    Vector local_normal_at(const Point& object_point) const override; 
+    
     std::array<double,2> check_axis(double origin, double direction) const; 
     AABB bounds() const; 
 }; 
@@ -102,7 +102,7 @@ class Cylinder: public Shape
     Cylinder(double _minimum,double _maximum,CYL_TYPE _type):Shape(),minimum(_minimum),maximum(_maximum),type(_type){}
     
     //methods
-    Vector local_normal_at(const Point& object_point) const override; 
+    Vector local_normal_at(const Point& object_point,const Intersection& hit) const override;   
     bool check_cap(const Ray& r, double t) const; 
     std::vector<Intersection> local_intersect(const Ray& r) const override; 
     void intersect_caps(const Ray& r, std::vector<Intersection>& xs) const; 
@@ -119,7 +119,7 @@ class Triangle: public Shape
     public: 
     Triangle(const Point& _p1, const Point& _p2, const Point& _p3):Shape(),p1(_p1),p2(_p2),p3(_p3){e1 = p2 - p1; e2 = p3 - p1; normal = (e2^e1).normalize(); }
     std::vector<Intersection> local_intersect(const Ray& r) const override; 
-    Vector local_normal_at(const Point& object_point) const override; 
+    Vector local_normal_at(const Point& object_point,const Intersection& hit) const override; 
     AABB bounds() const; 
 
     //fields 
@@ -133,6 +133,27 @@ class Triangle: public Shape
     Vector normal; 
 }; 
 
+class SmoothTriangle: public Shape
+{
+    public: 
+    SmoothTriangle(const Point& _p1, const Point& _p2, const Point& _p3, const Vector& _n1, const Vector&_n2, const Vector&_n3):Shape(),p1(_p1),p2(_p2),p3(_p3),n1(_n1),n2(_n2),n3(_n3){e1 = p2 - p1; e2 = p3 - p1;}
+    Vector local_normal_at(const Point& object_point,const Intersection& hit) const override; 
+    std::vector<Intersection> local_intersect(const Ray& r) const override; 
+    AABB bounds() const; 
+
+    //fields 
+    Point p1; 
+    Point p2; 
+    Point p3; 
+
+    Vector e1; 
+    Vector e2; 
+
+    Vector n1;
+    Vector n2;
+    Vector n3;
+}; 
+
 Sphere* glass_sphere(); 
 
 Sphere* hexagon_corner(); 
@@ -142,5 +163,7 @@ Cylinder* hexagon_edge();
 Group* hexagon_side(); 
 
 Group* hexagon(); 
+
+
 
 #endif

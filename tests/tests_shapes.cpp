@@ -72,29 +72,31 @@ TEST_CASE("Computing sphere normal vectors","[sphere][shape]")
 {
     Sphere s; 
 
+    Intersection dummy(0.0,nullptr); 
+
     SECTION("Normal at point on x-axis")
     {
-        Vector n = s.normal_at(Point(1.,0.,0.)); 
+        Vector n = s.normal_at(Point(1.,0.,0.),dummy); 
         REQUIRE(n == Vector(1.,0.,0.)); 
     }
     SECTION("Normal at point on y-axis")
     {
-        Vector n = s.normal_at(Point(0.,1.,0.)); 
+        Vector n = s.normal_at(Point(0.,1.,0.),dummy); 
         REQUIRE(n == Vector(0.,1.,0.)); 
     }
     SECTION("Normal at point on z-axis")
     {
-        Vector n = s.normal_at(Point(0.,0.,1.)); 
+        Vector n = s.normal_at(Point(0.,0.,1.),dummy); 
         REQUIRE(n == Vector(0.,0.,1.)); 
     }
     SECTION("Normal at non-axial point")
     {
-        Vector n = s.normal_at(Point(sqrt(3)/3.f,sqrt(3)/3.f,sqrt(3)/3.f)); 
+        Vector n = s.normal_at(Point(sqrt(3)/3.f,sqrt(3)/3.f,sqrt(3)/3.f),dummy); 
         REQUIRE(n == Vector(sqrt(3)/3.f,sqrt(3)/3.f,sqrt(3)/3.f)); 
     }
     SECTION("Normal is a normalized vector")
     {
-        Vector n = s.normal_at(Point(sqrt(3)/3.f,sqrt(3)/3.f,sqrt(3)/3.f)); 
+        Vector n = s.normal_at(Point(sqrt(3)/3.f,sqrt(3)/3.f,sqrt(3)/3.f),dummy); 
         REQUIRE(equal_double(n.magnitude(),1.f)); 
     }
 }
@@ -102,17 +104,18 @@ TEST_CASE("Computing sphere normal vectors","[sphere][shape]")
 TEST_CASE("Normal on transformed sphere","[sphere][shape]")
 {
     Sphere s;
+    Intersection dummy(0.0,nullptr); 
     SECTION("Normal on translated sphere")
     {
         s.setTransform(translation(0.,1.,0.)); 
-        Vector n = s.normal_at(Point(0.f,1.70711,-0.70711)); 
+        Vector n = s.normal_at(Point(0.f,1.70711,-0.70711),dummy); 
         REQUIRE(n == Vector(0.f,0.70711,-0.70711)); 
     }
     SECTION("Normal on transformed sphere")
     {
         Matrix m = scaling(1,0.5,1) * rotation_z(M_PI/5.f); 
         s.setTransform(m); 
-        Vector n = s.normal_at(Point(0.f,sqrt(2)/2.f,-sqrt(2)/2.f)); 
+        Vector n = s.normal_at(Point(0.f,sqrt(2)/2.f,-sqrt(2)/2.f),dummy); 
         REQUIRE(n == Vector(0.f,0.97014,-0.24254)); 
     }
 }
@@ -167,9 +170,10 @@ TEST_CASE("Sphere material properties","[sphere][shape]")
 TEST_CASE("The normal of a plane is constant everywhere","[plane][shape]")
 {
     Plane p; 
-    Vector n1 = p.local_normal_at(Point(0,0,0)); 
-    Vector n2 = p.local_normal_at(Point(10,0,-10)); 
-    Vector n3 = p.local_normal_at(Point(-5,0,150)); 
+    Intersection dummy(0.0,nullptr); 
+    Vector n1 = p.local_normal_at(Point(0,0,0),dummy); 
+    Vector n2 = p.local_normal_at(Point(10,0,-10),dummy); 
+    Vector n3 = p.local_normal_at(Point(-5,0,150),dummy); 
 
     REQUIRE(n1 == Vector(0,1,0)); 
     REQUIRE(n2 == Vector(0,1,0)); 
@@ -293,9 +297,11 @@ TEST_CASE("The normal on the surface of a cube","[shapes][cube]")
     std::pair<Point, Vector>{Point(-1,-1,-1), Vector(-1,0,0)}
     }; 
 
+    Intersection dummy(0.0,nullptr); 
     for(int i = 0; i < p_norms.size();i++)
     {
-        Vector normal = c.local_normal_at(p_norms[i].first); 
+
+        Vector normal = c.local_normal_at(p_norms[i].first,dummy); 
         REQUIRE(normal == p_norms[i].second); 
     }
 }
@@ -352,10 +358,11 @@ TEST_CASE("Normal vector on a cylinder","[shapes][cylinder]")
     std::pair<Point, Vector>{Point(0,-2,1), Vector(0,0,1)},
     std::pair<Point, Vector>{Point(-1,1,0), Vector(-1,0,0)}
 }; 
-
+    Intersection dummy(0.0,nullptr); 
     for(int i = 0; i < pvs.size(); i++)
     {
-        REQUIRE(cyl.local_normal_at(pvs[i].first) == pvs[i].second); 
+
+        REQUIRE(cyl.local_normal_at(pvs[i].first,dummy) == pvs[i].second); 
     }
 }
 
@@ -429,9 +436,10 @@ TEST_CASE("The normal vector on a cylinders end caps","[shapes][cylinder]")
     REQUIRE(cyl.minimum == 1); 
     REQUIRE(cyl.maximum == 2); 
 
+    Intersection dummy(0.0,nullptr); 
     for(int i = 0; i < pvs.size(); i++)
     {
-        Vector n = cyl.local_normal_at(pvs[i].first); 
+        Vector n = cyl.local_normal_at(pvs[i].first,dummy); 
         REQUIRE(n == pvs[i].second); 
     }
 }
@@ -571,8 +579,8 @@ TEST_CASE("Finding the normal on a child object","[group][shapes]")
     s->transform = translation(5,0,0); 
 
     g2->add_child(s);
-
-    Vector n = s->normal_at(Point(1.73321,1.1547,-5.5774)); 
+    Intersection dummy(0.0,nullptr); 
+    Vector n = s->normal_at(Point(1.73321,1.1547,-5.5774),dummy); 
     REQUIRE(n == Vector(0.2857,0.4286,-0.8571)); 
 }
 
@@ -593,10 +601,11 @@ TEST_CASE("Constructing a triangle","[triangle][shapes]")
 
 TEST_CASE("Finding the normal on a triangle","[triangle][shapes]")
 {
+    Intersection dummy(0.0,nullptr); 
     Triangle t(Point(0,1,0),Point(-1,0,0),Point(1,0,0)); 
-    Vector n1 = t.local_normal_at(Point(0,0.5,0)); 
-    Vector n2 = t.local_normal_at(Point(-0.5,0.75,0));
-    Vector n3 = t.local_normal_at(Point(0.5,0.25,0));\
+    Vector n1 = t.local_normal_at(Point(0,0.5,0),dummy); 
+    Vector n2 = t.local_normal_at(Point(-0.5,0.75,0),dummy);
+    Vector n3 = t.local_normal_at(Point(0.5,0.25,0),dummy);
 
     REQUIRE(n1 == t.normal); 
     REQUIRE(n2 == t.normal); 
@@ -652,6 +661,69 @@ TEST_CASE("A ray strikes a triangle","[triangle][shapes]")
 
     REQUIRE(xs.size() == 1);
     REQUIRE(xs[0].t == 2);  
+}
+
+TEST_CASE("Constructing a smooth triangle","[triangle][shapes]")
+{
+    Point p1(0,1,0); 
+    Point p2(-1,0,0); 
+    Point p3(1,0,0); 
+
+    Vector n1(0,1,0); 
+    Vector n2(-1,0,0); 
+    Vector n3(1,0,0); 
+
+    SmoothTriangle tri(p1,p2,p3,n1,n2,n3); 
+
+    REQUIRE(tri.p1 == p1); 
+    REQUIRE(tri.p2 == p2); 
+    REQUIRE(tri.p3 == p3); 
+
+    REQUIRE(tri.n1 == n1); 
+    REQUIRE(tri.n2 == n2); 
+    REQUIRE(tri.n3 == n3); 
+}
+
+TEST_CASE("An intersection can encapsulate u and v","[triangle][shapes]")
+{
+    Triangle tri(Point(0,1,0),Point(-1,0,0),Point(1,0,0)); 
+    Intersection I(3.5,&tri,0.2,0.4); 
+
+    REQUIRE(I.u == 0.2); 
+    REQUIRE(I.v == 0.4); 
+}
+
+TEST_CASE("An intersection with a smooth triangle stores u/v")
+{
+
+    SmoothTriangle tri(Point(0,1,0),Point(-1,0,0),Point(1,0,0),Vector(0,1,0),Vector(-1,0,0),Vector(1,0,0)); 
+    Ray r(Point(-0.2,0.3,-2),Vector(0,0,1)); 
+    std::vector<Intersection> xs = tri.local_intersect(r); 
+
+    REQUIRE(equal_double(xs[0].u,0.45)); 
+    REQUIRE(equal_double(xs[0].v,0.25)); 
+}
+
+TEST_CASE("A smooth triangle uses u/v to interpolate the normal","[triangle][shapes]")
+{
+    SmoothTriangle tri(Point(0,1,0),Point(-1,0,0),Point(1,0,0),Vector(0,1,0),Vector(-1,0,0),Vector(1,0,0));
+    Intersection I(1,&tri,0.45,0.25); 
+    Vector n = tri.normal_at(Point(0,0,0),I);
+
+    REQUIRE(n == Vector(-0.5547,0.83205,0)); 
+}
+
+TEST_CASE("Preparing the normal on a smooth triangle","[triangle][shapes]")
+{
+    SmoothTriangle tri(Point(0,1,0),Point(-1,0,0),Point(1,0,0),Vector(0,1,0),Vector(-1,0,0),Vector(1,0,0));
+    Intersection I(1,&tri,0.45,0.25);
+
+    Ray r(Point(-0.2,0.3,-2),Vector(0,0,1)); 
+
+    std::vector<Intersection> xs = intersections({I}); 
+    Computations comps(I,r,xs); 
+
+    REQUIRE(comps.normalv == Vector(-0.5547,0.83205,0)); 
 }
 
 

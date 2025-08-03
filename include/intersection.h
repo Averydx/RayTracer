@@ -17,8 +17,12 @@ class Intersection
         double t; 
         const Shape* s; 
 
+        double u = 0; 
+        double v = 0; 
+
     //constructor 
     Intersection(double t, const Shape* s):t(t),s(s) {}
+    Intersection(double t, const Shape* s,double u, double v):t(t),s(s),u(u),v(v){}
 
     //methods 
     void printIntersection(); 

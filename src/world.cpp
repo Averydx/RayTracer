@@ -48,6 +48,8 @@ Color World::shade_hit(const Computations& comps,int remaining)
 {
     bool in_shadow = this->is_shadowed(comps.over_point); 
 
+    //bool in_shadow = false; 
+
     Color surface =  lighting(comps.s->mat,comps.s,this->world_light,comps.over_point,comps.eyev,comps.normalv,in_shadow);
 
     Color reflected = Color(0,0,0); 

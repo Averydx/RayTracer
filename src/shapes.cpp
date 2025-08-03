@@ -5,6 +5,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <algorithm> 
+#include <iostream> 
 
 
 AABB Sphere::bounds() const
@@ -34,9 +35,9 @@ std::vector<Intersection> Sphere::local_intersect(const Ray& r) const
 
 }
 
-Vector Sphere::local_normal_at(const Point& object_point) const
+Vector Sphere::local_normal_at(const Point& object_point,const Intersection& hit) const 
 {
-
+    
     Vector local_normal = object_point - Point(0.,0.,0.); 
     return local_normal; 
 
@@ -47,7 +48,7 @@ AABB Plane::bounds() const
     return AABB(Point(this->x_minimum,-EPSILON,this->z_minimum),Point(this->x_maximum,EPSILON,this->z_maximum)); 
 }
 
-Vector Plane::local_normal_at(const Point& object_point) const
+Vector Plane::local_normal_at(const Point& object_point,const Intersection& hit) const 
 {
     return Vector(0,1,0); 
 }
@@ -68,7 +69,7 @@ AABB Cube::bounds() const
     return AABB(Point(-1,-1,-1),Point(1,1,1)); 
 }
 
-Vector Cube::local_normal_at(const Point& object_point) const
+Vector Cube::local_normal_at(const Point& object_point,const Intersection& hit) const 
 {
     double maxc = std::max(std::max(abs(object_point.x),abs(object_point.y)),abs(object_point.z)); 
     if(maxc == abs(object_point.x))
@@ -154,7 +155,7 @@ std::vector<Intersection> Cylinder::local_intersect(const Ray& r) const
     return intersection_list; 
 }
 
-Vector Cylinder::local_normal_at(const Point& object_point) const
+Vector Cylinder::local_normal_at(const Point& object_point,const Intersection& hit) const 
 {
     double dist = object_point.x * object_point.x + object_point.z * object_point.z; 
     if(dist < 1 && (object_point.y >= this->maximum - EPSILON))
@@ -216,7 +217,7 @@ std::vector<Intersection> Group::local_intersect(const Ray& r) const
 } 
 
 //methods
-Vector Group::local_normal_at(const Point& object_point) const
+Vector Group::local_normal_at(const Point& object_point,const Intersection& hit) const 
 {
     return Vector(0,0,0); 
 }
@@ -304,12 +305,12 @@ std::vector<Intersection> Triangle::local_intersect(const Ray& r) const
         return xs; 
 
     double t = f * (this->e2 * origin_cross_e1); 
-    xs.push_back(Intersection(t,this)); 
+    xs.push_back(Intersection(t,this,u,v)); 
 
     return xs; 
     
 }
-Vector Triangle::local_normal_at(const Point& object_point) const
+Vector Triangle::local_normal_at(const Point& object_point,const Intersection& hit) const 
 {
     return this->normal; 
 }
@@ -325,6 +326,54 @@ AABB Triangle::bounds() const
     
 
     return AABB(Point(x_min,y_min,z_min),Point(x_max,y_max,z_max)); 
+}
+
+std::vector<Intersection> SmoothTriangle::local_intersect(const Ray& r) const
+{
+    std::vector<Intersection> xs = std::vector<Intersection>(); 
+    Vector dir_cross_e2 = r.direction ^ this->e2; 
+    double det = this->e1 * dir_cross_e2; 
+
+    //Check if the ray is parallel to the triangle
+    if(abs(det)<EPSILON)
+        return xs; 
+
+    //Checks if the ray misses the p1-p3 edge
+    double f = 1.0/det; 
+    Vector p1_to_origin = r.origin - this->p1; 
+    double u = f * (p1_to_origin * dir_cross_e2); 
+
+    if(u < 0 || u > 1)
+        return xs;
+      
+    Vector origin_cross_e1 = p1_to_origin ^ this->e1; 
+    double v = f * (r.direction * origin_cross_e1); 
+
+    if(v < 0 || ((u + v) > 1))
+        return xs; 
+
+    double t = f * (this->e2 * origin_cross_e1); 
+    xs.push_back(Intersection(t,this,u,v)); 
+
+    return xs;  
+}
+
+Vector SmoothTriangle::local_normal_at(const Point& object_point,const Intersection& hit) const 
+{
+    return (this->n2 * hit.u + this->n3 * hit.v + this->n1 * (1-hit.u - hit.v)); 
+} 
+AABB SmoothTriangle::bounds() const
+{
+    double x_min = std::min(std::min(p1.x,p2.x),p3.x); 
+    double y_min = std::min(std::min(p1.y,p2.y),p3.y);
+    double z_min = std::min(std::min(p1.z,p2.z),p3.z);
+
+    double x_max = std::max(std::max(p1.x,p2.x),p3.x); 
+    double y_max = std::max(std::max(p1.y,p2.y),p3.y);
+    double z_max = std::max(std::max(p1.z,p2.z),p3.z);
+    
+
+    return AABB(Point(x_min,y_min,z_min),Point(x_max,y_max,z_max));  
 }
 
 Sphere* glass_sphere()
@@ -375,6 +424,8 @@ Group* hexagon()
 
     return hex; 
 }
+
+
 
 
 

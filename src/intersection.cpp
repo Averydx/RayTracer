@@ -83,7 +83,7 @@ Computations::Computations(const Intersection& I, const Ray& r, const std::vecto
     //precompute some useful values 
     this->point = r.position(this->t); 
     this->eyev = -r.direction;
-    this->normalv = this->s->normal_at(this->point); 
+    this->normalv = this->s->normal_at(this->point,I); 
 
     if((this->normalv * this->eyev) < 0)
     {
@@ -138,7 +138,7 @@ Computations::Computations(const Intersection& I, const Ray& r)
     //precompute some useful values 
     this->point = r.position(this->t); 
     this->eyev = -r.direction;
-    this->normalv = this->s->normal_at(this->point); 
+    this->normalv = this->s->normal_at(this->point,I); 
 
     if((this->normalv * this->eyev) < 0)
     {

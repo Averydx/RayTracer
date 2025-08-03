@@ -35,23 +35,23 @@ add_executable(tests ${TEST_FILES})
 target_link_libraries(tests PRIVATE Catch2::Catch2WithMain raytracer_core)
 target_include_directories(tests PRIVATE ${PROJECT_SOURCE_DIR}/include)
 
-# Demo1
-file(GLOB_RECURSE DEMO_FILES "demo1/*.cpp")
-add_executable(demo1 ${DEMO_FILES})
-target_link_libraries(demo1 PRIVATE raytracer_core)
-target_include_directories(demo1 PRIVATE ${PROJECT_SOURCE_DIR}/include)
+# # Demo1
+# file(GLOB_RECURSE DEMO_FILES "demo1/*.cpp")
+# add_executable(demo1 ${DEMO_FILES})
+# target_link_libraries(demo1 PRIVATE raytracer_core)
+# target_include_directories(demo1 PRIVATE ${PROJECT_SOURCE_DIR}/include)
 
-# Demo2
-file(GLOB_RECURSE DEMO_FILES "demo2/*.cpp")
-add_executable(demo2 ${DEMO_FILES})
-target_link_libraries(demo2 PRIVATE raytracer_core)
-target_include_directories(demo2 PRIVATE ${PROJECT_SOURCE_DIR}/include)
+# # Demo2
+# file(GLOB_RECURSE DEMO_FILES "demo2/*.cpp")
+# add_executable(demo2 ${DEMO_FILES})
+# target_link_libraries(demo2 PRIVATE raytracer_core)
+# target_include_directories(demo2 PRIVATE ${PROJECT_SOURCE_DIR}/include)
 
-# Demo3
-file(GLOB_RECURSE DEMO_FILES "demo3/*.cpp")
-add_executable(demo3 ${DEMO_FILES})
-target_link_libraries(demo3 PRIVATE raytracer_core)
-target_include_directories(demo3 PRIVATE ${PROJECT_SOURCE_DIR}/include)
+# # Demo3
+# file(GLOB_RECURSE DEMO_FILES "demo3/*.cpp")
+# add_executable(demo3 ${DEMO_FILES})
+# target_link_libraries(demo3 PRIVATE raytracer_core)
+# target_include_directories(demo3 PRIVATE ${PROJECT_SOURCE_DIR}/include)
 
 # Demo4
 file(GLOB_RECURSE DEMO_FILES "demo4/*.cpp")
