@@ -7,6 +7,8 @@
 #include <fstream>
 #include <string> 
 
+// This file defines the Canvas class for representing a 2D pixel grid
+// It includes methods for setting pixel colors, converting to PPM format, and saving to a file
 class Canvas
 {
     public: 

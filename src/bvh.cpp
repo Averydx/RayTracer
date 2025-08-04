@@ -4,6 +4,10 @@
 #include <algorithm>
 #include <iostream>
 
+// This file defines the Bounding Volume Hierarchy (BVH) for efficient ray tracing
+// It includes functions for building the BVH from a list of shapes and performing ray intersection tests
+
+// Helper functions for sorting shapes based on their centroids along different axes
 bool comp_xaxis(Shape* a, Shape* b) 
 {
     Point c1 = a->transform * Point(0,0,0); 
@@ -25,6 +29,9 @@ bool comp_zaxis(Shape* a, Shape* b)
     return c1.z < c2.z;
 }
 
+
+// This function sorts the primitives based on their centroids along the specified axis
+// It uses the helper functions defined above to compare the centroids of the shapes
 void sortPrimitivesByCentroid(std::vector<Shape*>& primitives, AXIS ax)
 {
     switch (ax)
@@ -43,6 +50,8 @@ void sortPrimitivesByCentroid(std::vector<Shape*>& primitives, AXIS ax)
     }
 }
 
+// This function computes the bounding box of a set of primitives and their centroids
+// It returns a pair containing the bounding box of the primitives and the bounding box of their centroids
 std::pair<AABB,AABB> computeBoundingBox(std::vector<Shape*>& primitives)
 {
     AABB primBox = primitives[0]->bounds(); 
@@ -73,6 +82,8 @@ std::pair<AABB,AABB> computeBoundingBox(std::vector<Shape*>& primitives)
     return paired; 
 }
 
+// This function chooses the axis for splitting the bounding box based on the largest extent
+// It compares the extents along the x, y, and z axes and returns the axis
 AXIS chooseSplitAxis(const AABB& cbox)
 {
     Vector extent = cbox.maximum - cbox.minimum; 
@@ -85,7 +96,8 @@ AXIS chooseSplitAxis(const AABB& cbox)
     return AXIS::Z_AXIS; 
 }
 
-
+// This function creates a union of two AABBs, returning a new AABB that encompasses both
+// It calculates the minimum and maximum points of the union based on the minimum and maximum points of both boxes
 AABB box_union(const AABB& box1, const AABB& box2)
 {
     Point minUnion; 
@@ -101,6 +113,9 @@ AABB box_union(const AABB& box1, const AABB& box2)
 
     return AABB(minUnion,maxUnion); 
 }
+
+// This function builds a BVH from a list of shapes, recursively dividing the shapes into left and right subtrees
+// It takes a maximum number of primitives per leaf node as a parameter
 BVHNode* build_bvh(std::vector<Shape*>& primitives,int maxPrimsPerLeaf)
 {
     if(primitives.size() == 0)
@@ -134,12 +149,16 @@ BVHNode* build_bvh_recursive(std::vector<Shape*>& primitives,int maxPrimsPerLeaf
     //Choose the split axis based on how far apart the centroids are
     AXIS ax = chooseSplitAxis(cbox); 
 
+    //Sort the primitives based on their centroids along the chosen axis
     sortPrimitivesByCentroid(primitives,ax); 
 
+    //Split the primitives into two halves
+    //This is a simple split, could be improved with a more sophisticated method
     int midpoint = primitives.size()/2; 
     std::vector<Shape*> left_primitives = std::vector<Shape*>(primitives.begin(), primitives.begin() + midpoint);
     std::vector<Shape*> right_primitives = std::vector<Shape*>(primitives.begin() + midpoint, primitives.end());
 
+    //Recursively build the left and right subtrees
     BVHNode* node = new BVHNode; 
     node->bbox = bbox; 
     node->left = build_bvh(left_primitives,maxPrimsPerLeaf); 
@@ -148,6 +167,8 @@ BVHNode* build_bvh_recursive(std::vector<Shape*>& primitives,int maxPrimsPerLeaf
     return node; 
 }
 
+// This function counts the number of primitives in the BVH
+// It recursively traverses the BVH and sums the number of primitives in each leaf node
 int count_bvh(BVHNode* node)
 {
     if(node->isLeaf)
@@ -156,6 +177,7 @@ int count_bvh(BVHNode* node)
     return count_bvh(node->left) + count_bvh(node->right); 
 }
 
+// This function intersects a ray with the BVH
 std::vector<Intersection> bvh_intersect(BVHNode* node,const Ray& r)
 {
     std::vector<Intersection> xs; 

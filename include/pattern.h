@@ -6,6 +6,8 @@
 
 class Shape; 
 
+// This file defines the Pattern class and its derived classes for creating various patterns
+// Patterns can be applied to shapes to create complex visual effects
 class Pattern
 {
     public: 
@@ -20,6 +22,7 @@ class Pattern
     Color color_at_object(const Shape* object, const Point& world_point) const; 
 }; 
 
+// Derived classes for specific patterns
 class StripePattern: public Pattern
 {
     public:

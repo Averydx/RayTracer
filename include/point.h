@@ -4,11 +4,9 @@
 #include "tuple.h"
 #include "vector.h"
 
-/*
-* Defines a point. This is a subclass of tuple designed to represent a point in space. 
-*
-*/
 
+// This file defines the Point class for representing points in 3D space
+// The Point class is a subclass of Tuple and includes methods for point-specific operations
 class Point : public Tuple
 {
     public: 

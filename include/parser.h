@@ -10,7 +10,8 @@
 #include <string>
 #include <vector>
 
-
+// This file defines the Parser class for reading and parsing model files
+// It includes methods for reading vertices, faces, and creating shapes from the parsed data
 class Parser
 {
     public: 

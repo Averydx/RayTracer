@@ -4,6 +4,8 @@
 #include "color.h"
 #include "pattern.h"
 
+// This file defines the Material class for ray tracing
+// The Material class represents the properties of a surface, including color, patterns, and optical properties
 class Material
 {
     public: 

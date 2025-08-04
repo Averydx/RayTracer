@@ -8,6 +8,8 @@
 #include "point.h"
 #include "color.h"
 
+// This file defines the Matrix class for representing 4x4 matrices
+// It includes methods for matrix operations such as multiplication, inversion, and transformations
 class Matrix
 {
 

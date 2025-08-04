@@ -19,6 +19,7 @@ Ray Camera::ray_for_pixel(double px, double py) const
     double world_x = this->half_width - xoffset; 
     double world_y = this->half_height - yoffset; 
 
+    //Using the camera's transform to convert the pixel coordinates into a ray
     Matrix inv_trans = this->transform.inverse(); 
     Point pixel = inv_trans * Point(world_x,world_y,-1); 
     Point origin = inv_trans * Point(0,0,0); 
@@ -29,6 +30,8 @@ Ray Camera::ray_for_pixel(double px, double py) const
 } 
 
 
+// This function renders the scene from the camera's perspective
+// It creates a canvas and fills it with the colors calculated from the world objects
 Canvas render(const Camera& c, World& w)
 {
     Canvas image(c.hsize,c.vsize); 

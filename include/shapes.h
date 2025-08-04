@@ -15,6 +15,7 @@
 
 class BVHNode; 
 
+// Sphere class represents a sphere shape in 3D space
 class Sphere : public Shape
 {
     public:
@@ -29,6 +30,7 @@ class Sphere : public Shape
 
 }; 
 
+// Group class represents a collection of shapes, allowing for hierarchical transformations and bounding volume hierarchy (BVH) for efficient intersection tests
 class Group: public Shape
 {
     public:
@@ -53,6 +55,7 @@ class Group: public Shape
 
 }; 
 
+// Plane class represents an infinite plane in 3D space
 class Plane : public Shape
 {
     public:
@@ -74,6 +77,7 @@ class Plane : public Shape
 
 };
 
+//Cube class represents a cube shape in 3D space
 class Cube : public Shape 
 {
     public: 
@@ -87,12 +91,15 @@ class Cube : public Shape
     AABB bounds() const; 
 }; 
 
+// Enum for cylinder types
+// OPEN: Cylinder with open ends, CLOSED: Cylinder with closed ends
 enum class CYL_TYPE
 {
     OPEN,
     CLOSED
 }; 
 
+// Cylinder class represents a cylinder shape in 3D space
 class Cylinder: public Shape
 {
     public: 
@@ -114,6 +121,7 @@ class Cylinder: public Shape
     CYL_TYPE type = CYL_TYPE::OPEN; 
 }; 
 
+// Triangle class represents a triangle shape in 3D space
 class Triangle: public Shape
 {
     public: 
@@ -133,6 +141,8 @@ class Triangle: public Shape
     Vector normal; 
 }; 
 
+// SmoothTriangle class represents a triangle with smooth shading in 3D space
+// It includes vertex normals for each corner of the triangle, allowing for smooth shading across the surface
 class SmoothTriangle: public Shape
 {
     public: 
@@ -154,6 +164,7 @@ class SmoothTriangle: public Shape
     Vector n3;
 }; 
 
+// Function declarations for creating specific shapes
 Sphere* glass_sphere(); 
 
 Sphere* hexagon_corner(); 

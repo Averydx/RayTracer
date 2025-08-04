@@ -7,6 +7,8 @@
 
 #include <vector>
 
+// This file defines the Ray class for representing rays in 3D space
+// It includes methods for ray operations such as position calculation and transformation
 class Ray
 {
     public: 
