@@ -24,10 +24,10 @@ int main(int argc, char *argv[])
     floor->mat.pattern = new CheckerPattern(Color(1.f,1.f,1.f),Color(0.f,0.f,0.f));
     floor->mat.pattern->transform = scaling(0.33,0.33,0.33); 
 
-    // Plane* wall1 = new Plane(); 
-    // wall1->mat.mat_color = Color(0.768,0.768,0.768); 
-    // wall1->transform = (translation(0,0,10)*rotation_x(M_PI/2.f)); 
-    // wall1->mat.reflective = 1.0; 
+    Plane* wall1 = new Plane(); 
+    wall1->mat.mat_color = Color(0.2,0.2,0.2); 
+    wall1->transform = (translation(0,0,10)*rotation_x(M_PI/2.f)); 
+    wall1->mat.reflective = 1.0; 
 
     Group* walls = new Group(); 
     //walls->add_child(wall1); 
@@ -80,5 +80,5 @@ int main(int argc, char *argv[])
     std::chrono::duration<double> elapsed_seconds = end - start;
     std::cout << "Render time: " << elapsed_seconds.count() << " seconds" << std::endl;
 
-    image.CanvasToPPM("demo4.ppm"); 
+    image.CanvasToPPM("dragon.ppm"); 
 }

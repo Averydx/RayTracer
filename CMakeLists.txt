@@ -54,10 +54,10 @@ target_include_directories(tests PRIVATE ${PROJECT_SOURCE_DIR}/include)
 # target_include_directories(demo3 PRIVATE ${PROJECT_SOURCE_DIR}/include)
 
 # Demo4
-file(GLOB_RECURSE DEMO_FILES "demo4/*.cpp")
-add_executable(demo4 ${DEMO_FILES})
-target_link_libraries(demo4 PRIVATE raytracer_core)
-target_link_libraries(demo4 PRIVATE OpenMP::OpenMP_CXX)
-target_include_directories(demo4 PRIVATE ${PROJECT_SOURCE_DIR}/include)
+file(GLOB_RECURSE DEMO_FILES "main/*.cpp")
+add_executable(main ${DEMO_FILES})
+target_link_libraries(main PRIVATE raytracer_core)
+target_link_libraries(main PRIVATE OpenMP::OpenMP_CXX)
+target_include_directories(main PRIVATE ${PROJECT_SOURCE_DIR}/include)
 
 
