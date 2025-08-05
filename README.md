@@ -11,5 +11,8 @@ cmake --build . --config Release
 
 Some cool looking renders!
 
-Inline-style: 
+Stanford dragon: 
+![alt text](renders/dragon.png "Glass bottle and copper pot")
+
+Copper pot and glass bottle: 
 ![alt text](renders/glass_bottle_pot.png "Glass bottle and copper pot")
