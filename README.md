@@ -6,3 +6,7 @@ mkdir build
 cd build 
 cmake --build . --config Release
 
+Some cool looking renders!
+
+Inline-style: 
+![alt text](renders/glass_bottle_pot.png "Glass bottle and copper pot")
