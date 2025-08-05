@@ -14,5 +14,12 @@ Some cool looking renders!
 Stanford dragon: 
 ![alt text](renders/dragon.png "Glass bottle and copper pot")
 
+Skull: 
+![alt text](renders/skull.png "Glass bottle and copper pot")
+
+Spheres: 
+![alt text](renders/balls.png "Glass bottle and copper pot")
+
 Copper pot and glass bottle: 
 ![alt text](renders/glass_bottle_pot.png "Glass bottle and copper pot")
+
