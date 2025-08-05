@@ -25,8 +25,8 @@ int main(int argc, char *argv[])
     floor->mat.pattern->transform = scaling(0.33,0.33,0.33); 
 
     Plane* wall = new Plane(); 
-    wall->mat.mat_color = Color(0.2,0.2,0.2); 
-    wall->transform = (translation(0,0,10)*rotation_x(M_PI/2.f)); 
+    wall->mat.pattern = new CheckerPattern(Color(1.f,1.f,1.f),Color(0.f,0.f,0.f));
+    wall->transform = (translation(0,0,10)*rotation_x(M_PI/2.f)) * scaling(10,10,10); 
     //wall->mat.reflective = 1.0; 
 
     Group* walls = new Group(); 
@@ -42,11 +42,11 @@ int main(int argc, char *argv[])
     
     std::cout<<"Vertices in file: "<<p.vertices.size()<<std::endl; 
 
-    p.default_group->transform = rotation_x(-M_PI/2) * translation(0,1,0) * scaling(0.1,0.1,0.1); 
-    //p.default_group->mat.transparency = 0.6; 
-    //p.default_group->mat.reflective = 0.3; 
-    //p.default_group->mat.refractive_index = 1.5; 
-    p.default_group->mat.mat_color = Color(0.2, 0.7, 0.2);  
+    p.default_group->transform = rotation_y(-M_PI) * rotation_x(-M_PI/2) * translation(0,1,0) * scaling(0.12,0.12,0.12); 
+    p.default_group->mat.transparency = 1.0; 
+    p.default_group->mat.reflective = 1.0; 
+    p.default_group->mat.refractive_index = 1.5; 
+    p.default_group->mat.mat_color = Color(0.6, 0.6, 0.6);  
     p.default_group->percolate_material(); 
 
     std::cout<<"triangle count: "<<p.default_group->children.size()<<std::endl; 
@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
 
     w.add_object(scene_group); 
     
-    Camera cam(300,200,M_PI/3.f);
+    Camera cam(1920,1080,M_PI/3.f);
     cam.transform = view_transform(Point(0,2,-7),Point(0,2,0),Vector(0,1,0));  
 
 
