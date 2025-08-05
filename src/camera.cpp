@@ -38,6 +38,8 @@ Canvas render(const Camera& c, World& w)
 
     int total_pixel_count = c.hsize * c.vsize; 
 
+    // Parallelized the rendering process using OpenMP
+    // This will speed up the rendering by processing multiple pixels simultaneously
     #pragma omp parallel for default(none)
         for(int i = 0; i < total_pixel_count;i++)
         {

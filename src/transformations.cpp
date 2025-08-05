@@ -1,6 +1,8 @@
 #include "transformations.h"
 #include <math.h>
 
+// This function creates a translation matrix that translates points by (x, y, z).
+// It returns a 4x4 matrix that can be used to transform points in 3D space.
 Matrix translation(double x, double y, double z)
 {
     Matrix A(4,4); 
@@ -13,6 +15,8 @@ Matrix translation(double x, double y, double z)
     return A; 
 }
 
+// This function creates a scaling matrix that scales points by (x, y, z).
+// It returns a 4x4 matrix that can be used to scale points in 3D space.
 Matrix scaling(double x, double y, double z)
 {
     Matrix A(4,4); 
@@ -24,6 +28,8 @@ Matrix scaling(double x, double y, double z)
     return A; 
 }
 
+// This function creates a rotation matrix around the X-axis by a given angle in radians.
+// It returns a 4x4 matrix that can be used to rotate points in 3D space around the X-axis.
 Matrix rotation_x(double rad)
 {
     Matrix A(4,4); 
@@ -36,6 +42,8 @@ Matrix rotation_x(double rad)
     return A; 
 }
 
+// This function creates a rotation matrix around the Y-axis by a given angle in radians.
+// It returns a 4x4 matrix that can be used to rotate points in 3D space around the Y-axis.
 Matrix rotation_y(double rad)
 {
     Matrix A(4,4); 
@@ -48,6 +56,8 @@ Matrix rotation_y(double rad)
     return A; 
 }
 
+// This function creates a rotation matrix around the Y-axis by a given angle in radians.
+// It returns a 4x4 matrix that can be used to rotate points in 3D space around the Z-axis.
 Matrix rotation_z(double rad)
 {
     Matrix A(4,4); 
@@ -60,6 +70,7 @@ Matrix rotation_z(double rad)
     return A; 
 }
 
+// This function creates a skew matrix that skews points in 3D space.
 Matrix skew(double x_y,double x_z,double y_x,double y_z,double z_x,double z_y)
 {
     Matrix A(4,4); 
@@ -75,6 +86,8 @@ Matrix skew(double x_y,double x_z,double y_x,double y_z,double z_x,double z_y)
     return A; 
 }
 
+// This function creates a view transformation matrix that transforms points from world space to camera space.
+// It takes the camera's position, target point, and up vector as parameters.
 Matrix view_transform(const Point& from, const Point& to, const Vector& up)
 {
     Vector forward = to - from; 

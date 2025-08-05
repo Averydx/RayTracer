@@ -44,6 +44,8 @@ std::vector<Intersection> World::intersect(const Ray& ray)
     return intersection_list; 
 }
 
+//Shades the hit point based on the material properties and lighting
+//This function calculates the color at the intersection point, taking into account the material properties, lighting, and whether the point is in shadow.
 Color World::shade_hit(const Computations& comps,int remaining)
 {
     bool in_shadow = this->is_shadowed(comps.over_point); 
@@ -68,6 +70,8 @@ Color World::shade_hit(const Computations& comps,int remaining)
         return surface + reflected + refracted;    
 }
 
+//Calculates the color at a given ray, considering intersections and lighting
+//This function checks for intersections with the world objects and computes the color at the intersection point.
 Color World::color_at(const Ray& ray,int remaining)
 {
     std::vector<Intersection> _ints = this->intersect(ray); 
@@ -81,6 +85,8 @@ Color World::color_at(const Ray& ray,int remaining)
     return shade_hit(comps,remaining); 
 }
 
+//Checks if a point is in shadow with respect to the light source
+//This function casts a shadow ray from the point to the light source and checks for intersections with the world objects.
 bool World::is_shadowed(const Point& point)
 {
     Vector shadow_vec = this->world_light.position - point; 
@@ -96,6 +102,8 @@ bool World::is_shadowed(const Point& point)
     return false; 
 }
 
+//Calculates the color of the reflected ray at the intersection point
+//This function computes the reflection vector at the intersection point and traces a ray in that direction to get the color.
 Color World::reflected_color(const Computations& comps,int remaining)
 {
     if(remaining <= 1)
@@ -116,6 +124,8 @@ void World::empty_objects()
     this->world_objects.clear(); 
 }
 
+//This function spawns a refracted ray at the intersection point and traces it through the world to get the color.
+//It uses Snell's law to calculate the direction of the refracted ray based on the indices of refraction.
 Color World::refracted_color(const Computations& comps,int remaining)
 {
     if(remaining == 0)
@@ -146,6 +156,8 @@ Color World::refracted_color(const Computations& comps,int remaining)
     return color; 
 }
 
+//Calculates the Schlick approximation for reflectance
+//This function computes the reflectance at the intersection point using the cosine of the angle between the eye vector and the normal vector.
 double World::schlick(const Computations& comps)
 {
     double _cos = comps.eyev * comps.normalv;
@@ -169,6 +181,8 @@ double World::schlick(const Computations& comps)
     return r0 + (1-r0) * pow(1-_cos,5);  
 }
 
+//Adds a shape to the world
+//This function adds a new shape to the world and rebuilds the BVH for efficient intersection
 void World::add_object(Shape* s)
 {
     this->world_objects.push_back(s); 
