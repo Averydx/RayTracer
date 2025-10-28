@@ -2,7 +2,7 @@ Code for a raytracer following the book "The Ray Tracer Challenge" By Jamis Buck
 
 Build instructions on windows
 
-The only dependency is the Catch2 testing library. CMAKE will download the source and build the library alongside the project. 
+The only dependency is the Catch2 testing library. CMAKE will download the source and build the library alongside the project. Make sure your compiler supports OpenMP as it is used for parallelization. 
 
 mkdir build 
 cd build 
